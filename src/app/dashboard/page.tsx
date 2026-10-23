@@ -19,7 +19,7 @@ import { useAuth } from "@/components/auth-provider";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { CategoryTile, StatusBadge } from "@/components/issues/issue-badges";
 import { Button, buttonStyles } from "@/components/ui/button";
-import { EmptyState, Skeleton } from "@/components/ui/feedback";
+import { EmptyState, PageLoader, Skeleton } from "@/components/ui/feedback";
 import { api, getApiErrorMessage } from "@/lib/api";
 import { cn, formatNumber, timeAgo } from "@/lib/format";
 import type { Role } from "@/lib/types";
@@ -55,7 +55,13 @@ export default function DashboardPage() {
     queryFn: api.dashboard.stats,
   });
 
-  if (!user) return null;
+  if (!user) {
+    return (
+      <div className="mx-auto w-full max-w-6xl py-12">
+        <PageLoader label="Loading dashboard..." />
+      </div>
+    );
+  }
 
   const copy = roleCopy[user.role];
   const stats = statsQuery.data;

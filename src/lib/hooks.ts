@@ -12,3 +12,20 @@ export function useDebouncedValue<T>(value: T, delay = 350) {
 
   return debounced;
 }
+
+export function useObjectUrl(file: File | null) {
+  const [url, setUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!file) {
+      setUrl(null);
+      return;
+    }
+
+    const next = URL.createObjectURL(file);
+    setUrl(next);
+    return () => URL.revokeObjectURL(next);
+  }, [file]);
+
+  return url;
+}

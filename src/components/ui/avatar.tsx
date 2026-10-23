@@ -31,7 +31,14 @@ export function Avatar({
   size?: keyof typeof sizeClasses;
   className?: string;
 }) {
+  const [prevSrc, setPrevSrc] = useState(src);
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
+
+  if (prevSrc !== src) {
+    setPrevSrc(src);
+    setFailedSrc(null);
+  }
+
   const showImage = Boolean(src) && failedSrc !== src;
 
   return (
@@ -49,6 +56,7 @@ export function Avatar({
           width={pixelSizes[size]}
           height={pixelSizes[size]}
           className="h-full w-full object-cover"
+          unoptimized
           onError={() => setFailedSrc(src ?? null)}
         />
       ) : (

@@ -10,6 +10,7 @@ import {
   LogOut,
   Mail,
   ShieldCheck,
+  Trash2,
   UserRound,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -20,14 +21,17 @@ import { PageHeader } from "@/components/dashboard/page-header";
 import { RoleBadge, UserStatusBadge } from "@/components/issues/issue-badges";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { PageLoader } from "@/components/ui/feedback";
 import { FormField, Input } from "@/components/ui/field";
+import { Modal } from "@/components/ui/modal";
+import { PhotoPreviewDialog } from "@/components/ui/photo-preview-dialog";
 import { api, getApiErrorMessage } from "@/lib/api";
 import { IMAGE_ACCEPT, roleLabels } from "@/lib/constants";
 import { formatDateTime } from "@/lib/format";
+import { useObjectUrl } from "@/lib/hooks";
 import { changePasswordSchema, validateImageFile } from "@/lib/validation";
 
 type PasswordErrors = {
-  currentPassword?: string;
   newPassword?: string;
   confirmPassword?: string;
 };
@@ -38,18 +42,34 @@ export default function ProfilePage() {
   const { user, setUser, logout } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
+  const [removingPhoto, setRemovingPhoto] = useState(false);
+  const [pendingPhoto, setPendingPhoto] = useState<File | null>(null);
+  const [removePhotoOpen, setRemovePhotoOpen] = useState(false);
   const [logoutPending, setLogoutPending] = useState(false);
-  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPasswords, setShowPasswords] = useState(false);
   const [errors, setErrors] = useState<PasswordErrors>({});
   const [formError, setFormError] = useState("");
   const [changing, setChanging] = useState(false);
+  const photoPreview = useObjectUrl(pendingPhoto);
 
-  if (!user) return null;
+  if (!user) {
+    return (
+      <div className="mx-auto w-full max-w-4xl py-12">
+        <PageLoader label="Loading profile..." />
+      </div>
+    );
+  }
 
-  const handlePhoto = async (file: File | null) => {
+  const invalidatePhotoCaches = () => {
+    void queryClient.invalidateQueries({ queryKey: ["issue"] });
+    void queryClient.invalidateQueries({ queryKey: ["public-issues"] });
+    void queryClient.invalidateQueries({ queryKey: ["my-issues"] });
+    void queryClient.invalidateQueries({ queryKey: ["assigned-issues"] });
+  };
+
+  const handlePhoto = (file: File | null) => {
     if (!file) return;
     const message = validateImageFile(file);
     if (message) {
@@ -58,20 +78,45 @@ export default function ProfilePage() {
       return;
     }
 
+    setPendingPhoto(file);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const uploadPhoto = async () => {
+    if (!pendingPhoto) return;
+
     setUploading(true);
     try {
-      const response = await api.auth.updateProfileImage(file);
+      const response = await api.auth.updateProfileImage(pendingPhoto);
       if (response.data) setUser(response.data);
-      void queryClient.invalidateQueries({ queryKey: ["issue"] });
-      void queryClient.invalidateQueries({ queryKey: ["public-issues"] });
-      void queryClient.invalidateQueries({ queryKey: ["my-issues"] });
-      void queryClient.invalidateQueries({ queryKey: ["assigned-issues"] });
+      invalidatePhotoCaches();
+      setPendingPhoto(null);
       toast.success("Profile photo updated.");
     } catch (error) {
       toast.error(getApiErrorMessage(error));
     } finally {
       setUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
+  const cancelPhoto = () => {
+    if (uploading) return;
+    setPendingPhoto(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const removePhoto = async () => {
+    setRemovingPhoto(true);
+    try {
+      const response = await api.auth.removeProfileImage();
+      if (response.data) setUser(response.data);
+      invalidatePhotoCaches();
+      setRemovePhotoOpen(false);
+      toast.success("Profile photo removed.");
+    } catch (error) {
+      toast.error(getApiErrorMessage(error));
+    } finally {
+      setRemovingPhoto(false);
     }
   };
 
@@ -80,10 +125,7 @@ export default function ProfilePage() {
     setErrors({});
     setFormError("");
 
-    const parsed = changePasswordSchema.safeParse({
-      currentPassword,
-      newPassword,
-    });
+    const parsed = changePasswordSchema.safeParse({ newPassword });
     if (!parsed.success) {
       const next: PasswordErrors = {};
       for (const issue of parsed.error.issues) {
@@ -132,29 +174,45 @@ export default function ProfilePage() {
           <section className="overflow-hidden rounded-2xl border border-line bg-white shadow-sm">
             <div className="h-20 bg-[radial-gradient(circle_at_20%_20%,#d5e8dd,transparent_45%),radial-gradient(circle_at_85%_80%,#f5dfb4,transparent_50%)]" />
             <div className="px-5 pb-5">
-              <div className="-mt-9 flex items-end justify-between gap-4">
+              <div className="-mt-14 flex flex-wrap items-end justify-between gap-4">
                 <Avatar
                   name={user.name}
                   src={user.imageUrl}
                   size="xl"
                   className="border-4 border-white shadow-md"
                 />
-                <Button
-                  variant="outline"
-                  size="sm"
-                  loading={uploading}
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  <Camera className="h-3.5 w-3.5" />
-                  {user.imageUrl ? "Change photo" : "Add photo"}
-                </Button>
+                <div className="flex flex-wrap justify-end gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading || removingPhoto}
+                  >
+                    <Camera className="h-3.5 w-3.5" />
+                    {user.imageUrl ? "Change photo" : "Add photo"}
+                  </Button>
+                  {user.imageUrl ? (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-rose-600 hover:bg-rose-50 hover:text-rose-700"
+                      onClick={() => setRemovePhotoOpen(true)}
+                      disabled={
+                        uploading || removingPhoto || Boolean(pendingPhoto)
+                      }
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                      Remove
+                    </Button>
+                  ) : null}
+                </div>
                 <input
                   ref={fileInputRef}
                   type="file"
                   accept={IMAGE_ACCEPT}
                   className="hidden"
                   onChange={(event) =>
-                    void handlePhoto(event.target.files?.[0] ?? null)
+                    handlePhoto(event.target.files?.[0] ?? null)
                   }
                 />
               </div>
@@ -211,7 +269,7 @@ export default function ProfilePage() {
             </dl>
           </section>
 
-          <section className="rounded-2xl border border-line bg-[#fbfaf6] p-5">
+          {/* <section className="rounded-2xl border border-line bg-[#fbfaf6] p-5">
             <div className="flex items-center gap-2">
               <LogOut className="h-4 w-4 text-stone-500" />
               <h2 className="text-sm font-bold uppercase tracking-[0.12em] text-stone-500">
@@ -232,7 +290,7 @@ export default function ProfilePage() {
               <LogOut className="h-3.5 w-3.5" />
               Sign out
             </Button>
-          </section>
+          </section> */}
         </div>
 
         <div className="space-y-5">
@@ -249,23 +307,6 @@ export default function ProfilePage() {
             </p>
 
             <form className="mt-4 grid gap-4" onSubmit={submitPassword}>
-              <FormField
-                label="Current password"
-                htmlFor="currentPassword"
-                error={errors.currentPassword}
-                required
-              >
-                <Input
-                  id="currentPassword"
-                  type={showPasswords ? "text" : "password"}
-                  autoComplete="current-password"
-                  value={currentPassword}
-                  onChange={(event) => setCurrentPassword(event.target.value)}
-                  placeholder="Your current password"
-                  maxLength={128}
-                />
-              </FormField>
-
               <FormField
                 label="New password"
                 htmlFor="newPassword"
@@ -324,7 +365,7 @@ export default function ProfilePage() {
                 </div>
               ) : null}
 
-              <Button type="submit" loading={changing} className="w-full">
+              <Button type="submit" loading={changing} className="w-full mt-3">
                 <ShieldCheck className="h-4 w-4" />
                 Update password
               </Button>
@@ -353,6 +394,50 @@ export default function ProfilePage() {
           </section>
         </div>
       </div>
+
+      <PhotoPreviewDialog
+        open={Boolean(pendingPhoto)}
+        title="Upload profile photo"
+        description="Preview your new profile photo before uploading it."
+        previewUrl={photoPreview}
+        fileName={pendingPhoto?.name}
+        uploading={uploading}
+        onCancel={cancelPhoto}
+        onUpload={() => void uploadPhoto()}
+      />
+
+      <Modal
+        open={removePhotoOpen}
+        onClose={() => {
+          if (!removingPhoto) setRemovePhotoOpen(false);
+        }}
+        title="Remove profile photo?"
+        description="Your initials will be shown instead. You can upload a new photo at any time."
+        size="sm"
+        footer={
+          <>
+            <Button
+              variant="ghost"
+              onClick={() => setRemovePhotoOpen(false)}
+              disabled={removingPhoto}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="danger"
+              loading={removingPhoto}
+              onClick={() => void removePhoto()}
+            >
+              Remove photo
+            </Button>
+          </>
+        }
+      >
+        <p className="text-sm leading-6 text-stone-600">
+          This removes the photo from your profile and deletes the uploaded
+          image.
+        </p>
+      </Modal>
     </div>
   );
 }

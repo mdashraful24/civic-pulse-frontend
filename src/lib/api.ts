@@ -237,10 +237,11 @@ export const api = {
         body: formData,
       });
     },
-    changePassword: (payload: {
-      currentPassword: string;
-      newPassword: string;
-    }) =>
+    removeProfileImage: () =>
+      request<AuthUser>("/auth/me/image", {
+        method: "DELETE",
+      }),
+    changePassword: (payload: { newPassword: string }) =>
       request<null>("/auth/change-password", {
         method: "POST",
         body: payload,

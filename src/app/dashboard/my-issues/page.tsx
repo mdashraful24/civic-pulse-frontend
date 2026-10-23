@@ -25,10 +25,11 @@ import { Button, buttonStyles } from "@/components/ui/button";
 import { EmptyState, Skeleton } from "@/components/ui/feedback";
 import { FormField, Input, Select } from "@/components/ui/field";
 import { Modal } from "@/components/ui/modal";
+import { PhotoPreviewDialog } from "@/components/ui/photo-preview-dialog";
 import { api, getApiErrorMessage } from "@/lib/api";
 import { IMAGE_ACCEPT, STATUS_OPTIONS } from "@/lib/constants";
 import { formatDate, formatNumber, timeAgo } from "@/lib/format";
-import { useDebouncedValue } from "@/lib/hooks";
+import { useDebouncedValue, useObjectUrl } from "@/lib/hooks";
 import type { Issue, IssueStatus } from "@/lib/types";
 import { validateImageFile } from "@/lib/validation";
 
@@ -43,6 +44,10 @@ export default function MyIssuesPage() {
   const [editing, setEditing] = useState<Issue | null>(null);
   const [deleting, setDeleting] = useState<Issue | null>(null);
   const [photoIssue, setPhotoIssue] = useState<Issue | null>(null);
+  const [pendingPhoto, setPendingPhoto] = useState<{
+    issue: Issue;
+    file: File;
+  } | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const debouncedSearch = useDebouncedValue(search);
 
@@ -71,6 +76,7 @@ export default function MyIssuesPage() {
 
   const issues = query.data?.items ?? [];
   const meta = query.data?.meta;
+  const photoPreview = useObjectUrl(pendingPhoto?.file ?? null);
 
   const invalidate = () => {
     void queryClient.invalidateQueries({ queryKey: ["my-issues"] });
@@ -79,7 +85,7 @@ export default function MyIssuesPage() {
     void queryClient.invalidateQueries({ queryKey: ["public-issues"] });
   };
 
-  const handlePhoto = async (file: File | null) => {
+  const handlePhoto = (file: File | null) => {
     if (!file || !photoIssue) return;
     const message = validateImageFile(file);
     if (message) {
@@ -88,18 +94,30 @@ export default function MyIssuesPage() {
       toast.error(message);
       return;
     }
-    setBusyId(photoIssue.id);
+    setPendingPhoto({ issue: photoIssue, file });
+    setPhotoIssue(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const uploadPhoto = async () => {
+    if (!pendingPhoto) return;
+    setBusyId(pendingPhoto.issue.id);
     try {
-      await api.issues.updateImage(photoIssue.id, file);
+      await api.issues.updateImage(pendingPhoto.issue.id, pendingPhoto.file);
       toast.success("Issue photo updated.");
       invalidate();
+      setPendingPhoto(null);
     } catch (error) {
       toast.error(getApiErrorMessage(error));
     } finally {
       setBusyId(null);
-      setPhotoIssue(null);
-      if (fileInputRef.current) fileInputRef.current.value = "";
     }
+  };
+
+  const cancelPhoto = () => {
+    if (busyId) return;
+    setPendingPhoto(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   return (
@@ -245,9 +263,7 @@ export default function MyIssuesPage() {
           type="file"
           accept={IMAGE_ACCEPT}
           className="hidden"
-          onChange={(event) =>
-            void handlePhoto(event.target.files?.[0] ?? null)
-          }
+          onChange={(event) => handlePhoto(event.target.files?.[0] ?? null)}
         />
 
         <Modal
@@ -302,6 +318,21 @@ export default function MyIssuesPage() {
             </div>
           ) : null}
         </Modal>
+
+        <PhotoPreviewDialog
+          open={Boolean(pendingPhoto)}
+          title="Update issue photo"
+          description={
+            pendingPhoto
+              ? `Preview the new photo for ${pendingPhoto.issue.title}.`
+              : undefined
+          }
+          previewUrl={photoPreview}
+          fileName={pendingPhoto?.file.name}
+          uploading={Boolean(busyId)}
+          onCancel={cancelPhoto}
+          onUpload={() => void uploadPhoto()}
+        />
       </div>
     </RoleGate>
   );

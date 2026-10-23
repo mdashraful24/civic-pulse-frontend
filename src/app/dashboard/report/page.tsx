@@ -1,13 +1,16 @@
 "use client";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { Camera, CheckCircle2, Clock3, MapPin } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { RoleGate } from "@/components/dashboard/auth-guard";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { IssueForm } from "@/components/issues/issue-form";
+import type { Issue } from "@/lib/types";
 
 export default function ReportIssuePage() {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   return (
     <RoleGate allow={["CITIZEN"]}>
@@ -22,7 +25,11 @@ export default function ReportIssuePage() {
           <div className="rounded-2xl border border-line bg-white p-5 shadow-sm sm:p-6">
             <IssueForm
               mode="create"
-              onSuccess={(issue) => router.push(`/issues/${issue.id}`)}
+              onSuccess={(issue: Issue) => {
+                // Seed the cache so IssueDetail renders instantly (no re-fetch → no missing image flash)
+                queryClient.setQueryData(["issue", issue.id], issue);
+                router.push(`/issues/${issue.id}`);
+              }}
             />
           </div>
 

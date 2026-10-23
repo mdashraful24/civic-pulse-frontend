@@ -91,13 +91,13 @@ The frontend allows cross-origin cookies to the configured API URL. In local dev
 
 ## Validation
 
-Client-side validation mirrors the backend Zod schemas. When either side changes, update both.
+Client-side validation mirrors the backend Zod schemas. When either side changes, update both. The backend additionally rejects changing to the current password.
 
 | Field | Rule |
 | --- | --- |
 | Name | 2–80 characters |
 | Email | Valid address, max 254 characters, normalised to lowercase |
-| Password | 8–128 characters, at least one letter and one number, max 72 bytes, different from the current password |
+| Password | 8–128 characters, at least one letter and one number, max 72 bytes |
 | OTP | Exactly 6 digits |
 | Issue title | 3–150 characters |
 | Issue description | 10–5000 characters |

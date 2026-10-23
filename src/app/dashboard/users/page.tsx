@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { EmptyState, Skeleton } from "@/components/ui/feedback";
 import { FormField, Input, Select } from "@/components/ui/field";
 import { Modal } from "@/components/ui/modal";
+import { PhotoPreviewDialog } from "@/components/ui/photo-preview-dialog";
 import { api, getApiErrorMessage } from "@/lib/api";
 import {
   IMAGE_ACCEPT,
@@ -28,7 +29,7 @@ import {
   USER_STATUS_OPTIONS,
 } from "@/lib/constants";
 import { formatDate, formatNumber, timeAgo } from "@/lib/format";
-import { useDebouncedValue } from "@/lib/hooks";
+import { useDebouncedValue, useObjectUrl } from "@/lib/hooks";
 import type { AdminUser, Role, UserStatus } from "@/lib/types";
 import { validateImageFile } from "@/lib/validation";
 
@@ -44,6 +45,10 @@ export default function AdminUsersPage() {
   const [status, setStatus] = useState<UserStatus | "">("");
   const [page, setPage] = useState(1);
   const [removing, setRemoving] = useState<AdminUser | null>(null);
+  const [pendingPhoto, setPendingPhoto] = useState<{
+    user: AdminUser;
+    file: File;
+  } | null>(null);
   const debouncedSearch = useDebouncedValue(search);
 
   const query = useQuery({
@@ -99,6 +104,7 @@ export default function AdminUsersPage() {
   const users = query.data?.items ?? [];
   const meta = query.data?.meta;
   const hasFilters = Boolean(search || role || status);
+  const pendingPreview = useObjectUrl(pendingPhoto?.file ?? null);
 
   const openPhotoPicker = (user: AdminUser) => {
     photoTargetRef.current = user;
@@ -116,15 +122,28 @@ export default function AdminUsersPage() {
       toast.error(message);
       return;
     }
+    setPendingPhoto({ user, file });
+    photoTargetRef.current = null;
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const uploadPhoto = () => {
+    if (!pendingPhoto) return;
     imageMutation.mutate(
-      { user, file },
+      { user: pendingPhoto.user, file: pendingPhoto.file },
       {
+        onSuccess: () => setPendingPhoto(null),
         onSettled: () => {
-          photoTargetRef.current = null;
           if (fileInputRef.current) fileInputRef.current.value = "";
         },
       },
     );
+  };
+
+  const cancelPhoto = () => {
+    if (imageMutation.isPending) return;
+    setPendingPhoto(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const resetFilters = () => {
@@ -483,6 +502,21 @@ export default function AdminUsersPage() {
           </p>
         </div>
       </div>
+
+      <PhotoPreviewDialog
+        open={Boolean(pendingPhoto)}
+        title="Update profile photo"
+        description={
+          pendingPhoto
+            ? `Preview the new photo for ${pendingPhoto.user.name}.`
+            : undefined
+        }
+        previewUrl={pendingPreview}
+        fileName={pendingPhoto?.file.name}
+        uploading={imageMutation.isPending}
+        onCancel={cancelPhoto}
+        onUpload={uploadPhoto}
+      />
     </RoleGate>
   );
 }

@@ -9,7 +9,7 @@ import {
   Wrench,
 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { toast } from "sonner";
 import { RoleGate } from "@/components/dashboard/auth-guard";
 import { PageHeader } from "@/components/dashboard/page-header";
@@ -20,7 +20,7 @@ import {
 } from "@/components/issues/issue-badges";
 import { Avatar } from "@/components/ui/avatar";
 import { Button, buttonStyles } from "@/components/ui/button";
-import { EmptyState, Skeleton } from "@/components/ui/feedback";
+import { EmptyState, PageLoader, Skeleton } from "@/components/ui/feedback";
 import { FormField, Input, Select, Textarea } from "@/components/ui/field";
 import { Modal } from "@/components/ui/modal";
 import { api, getApiErrorMessage } from "@/lib/api";
@@ -33,6 +33,14 @@ import { updateIssueStatusSchema } from "@/lib/validation";
 const PAGE_SIZE = 6;
 
 export default function AssignedIssuesPage() {
+  return (
+    <Suspense fallback={<PageLoader label="Loading assigned work" />}>
+      <AssignedIssuesContent />
+    </Suspense>
+  );
+}
+
+function AssignedIssuesContent() {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<IssueStatus | "">("");
