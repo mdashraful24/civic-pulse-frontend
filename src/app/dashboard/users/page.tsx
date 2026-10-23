@@ -1,6 +1,11 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import {
   Camera,
   CheckCircle2,
@@ -30,6 +35,7 @@ import {
 } from "@/lib/constants";
 import { formatDate, formatNumber, timeAgo } from "@/lib/format";
 import { useDebouncedValue, useObjectUrl } from "@/lib/hooks";
+import { cachePolicy, invalidateUserCaches } from "@/lib/query-cache";
 import type { AdminUser, Role, UserStatus } from "@/lib/types";
 import { validateImageFile } from "@/lib/validation";
 
@@ -61,14 +67,12 @@ export default function AdminUsersPage() {
         page,
         limit: PAGE_SIZE,
       }),
+    placeholderData: keepPreviousData,
+    ...cachePolicy.list,
   });
 
   const invalidate = () => {
-    void queryClient.invalidateQueries({ queryKey: ["admin-users"] });
-    void queryClient.invalidateQueries({ queryKey: ["issue"] });
-    void queryClient.invalidateQueries({ queryKey: ["public-issues"] });
-    void queryClient.invalidateQueries({ queryKey: ["my-issues"] });
-    void queryClient.invalidateQueries({ queryKey: ["assigned-issues"] });
+    invalidateUserCaches(queryClient);
   };
 
   const imageMutation = useMutation({
@@ -162,7 +166,7 @@ export default function AdminUsersPage() {
           description="Search everyone in the workspace, check their activity and manage profile photos."
         />
 
-        <div className="mb-5 rounded-2xl border border-line bg-white p-4 shadow-sm">
+        <div className="mb-5 rounded-2xl border border-line bg-surface p-4 shadow-sm">
           <div className="grid gap-3 sm:grid-cols-[1.6fr_1fr_1fr_auto] sm:items-end">
             <FormField label="Search people">
               <div className="relative">
@@ -233,7 +237,7 @@ export default function AdminUsersPage() {
             <Button
               variant="outline"
               size="sm"
-              className="mt-3 bg-white"
+              className="mt-3 bg-surface"
               onClick={() => query.refetch()}
             >
               Try again
@@ -247,7 +251,7 @@ export default function AdminUsersPage() {
           </div>
         ) : users.length > 0 ? (
           <>
-            <div className="hidden overflow-hidden rounded-2xl border border-line bg-white shadow-sm md:block">
+            <div className="hidden overflow-hidden rounded-2xl border border-line bg-surface shadow-sm md:block">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
                   <thead className="border-b border-line bg-stone-50/80 text-[11px] font-bold uppercase tracking-[0.12em] text-stone-500">
@@ -348,7 +352,7 @@ export default function AdminUsersPage() {
               {users.map((user) => (
                 <div
                   key={user.id}
-                  className="rounded-2xl border border-line bg-white p-4 shadow-sm"
+                  className="rounded-2xl border border-line bg-surface p-4 shadow-sm"
                 >
                   <div className="flex items-start gap-3">
                     <Avatar name={user.name} src={user.imageUrl} size="md" />
@@ -493,7 +497,7 @@ export default function AdminUsersPage() {
           ) : null}
         </Modal>
 
-        <div className="mt-6 flex items-start gap-2 rounded-xl border border-line bg-white/60 px-4 py-3 text-xs text-stone-500">
+        <div className="mt-6 flex items-start gap-2 rounded-xl border border-line bg-surface/60 px-4 py-3 text-xs text-stone-500">
           <UserRound className="mt-0.5 h-3.5 w-3.5 shrink-0 text-brand" />
           <p>
             Profile photos are public on issues a person reports or works on.

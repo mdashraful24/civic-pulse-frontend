@@ -8,7 +8,7 @@ import type {
 import { cn } from "@/lib/format";
 
 const controlClasses =
-  "w-full rounded-xl border border-line bg-white text-sm text-ink shadow-sm outline-none transition placeholder:text-stone-400 focus:border-brand focus:ring-4 focus:ring-brand/10 disabled:cursor-not-allowed disabled:bg-stone-50 disabled:text-stone-500";
+  "w-full rounded-xl border border-line bg-surface text-base text-ink shadow-sm outline-none transition placeholder:text-stone-400 focus:border-brand focus:ring-4 focus:ring-brand/10 disabled:cursor-not-allowed disabled:bg-stone-50 disabled:text-stone-500 sm:text-sm";
 
 export function FormField({
   label,

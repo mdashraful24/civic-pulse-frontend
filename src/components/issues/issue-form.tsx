@@ -245,7 +245,7 @@ export function IssueForm({
           <p className="mb-1.5 text-[13px] font-semibold text-ink/80">
             Photo <span className="font-normal text-stone-400">(optional)</span>
           </p>
-          <div className="flex items-center gap-4 rounded-2xl border border-dashed border-line bg-white/60 p-3.5">
+          <div className="flex items-center gap-4 rounded-2xl border border-dashed border-line bg-surface/60 p-3.5">
             <div className="relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-brand-soft text-brand">
               {preview ? (
                 <Image
@@ -264,7 +264,7 @@ export function IssueForm({
                 A clear photo helps the field team find the problem. JPEG, PNG,
                 WebP or GIF · max 5 MB.
               </p>
-              <div className="mt-2 flex items-center gap-2">
+              <div className="mt-2 flex flex-wrap items-center gap-2">
                 <input
                   ref={fileInputRef}
                   type="file"

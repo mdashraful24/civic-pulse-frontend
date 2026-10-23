@@ -1,6 +1,11 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import {
   Camera,
   ExternalLink,
@@ -35,6 +40,7 @@ import {
 } from "@/lib/constants";
 import { formatNumber, timeAgo } from "@/lib/format";
 import { useDebouncedValue } from "@/lib/hooks";
+import { cachePolicy, invalidateIssueCaches } from "@/lib/query-cache";
 import type {
   Issue,
   IssueCategory,
@@ -87,12 +93,15 @@ export function ManageIssues() {
         limit: PAGE_SIZE,
         sort: "newest",
       }),
+    placeholderData: keepPreviousData,
+    ...cachePolicy.list,
   });
 
   const focusQuery = useQuery({
     queryKey: ["issue", focusId],
     queryFn: () => api.issues.get(focusId as string),
     enabled: Boolean(focusId),
+    ...cachePolicy.detail,
   });
 
   const personnelQuery = useQuery({
@@ -100,6 +109,7 @@ export function ManageIssues() {
     queryFn: () =>
       api.admin.users({ role: "PERSONNEL", status: "ACTIVE", limit: 100 }),
     enabled: Boolean(selected),
+    ...cachePolicy.reference,
   });
 
   useEffect(() => {
@@ -176,10 +186,7 @@ export function ManageIssues() {
     onSuccess: () => {
       toast.success("Issue updated.");
       closeDialog();
-      void queryClient.invalidateQueries({ queryKey: ["admin-issues"] });
-      void queryClient.invalidateQueries({ queryKey: ["dashboard", "stats"] });
-      void queryClient.invalidateQueries({ queryKey: ["issue"] });
-      void queryClient.invalidateQueries({ queryKey: ["public-issues"] });
+      invalidateIssueCaches(queryClient);
     },
     onError: (error) => toast.error(getApiErrorMessage(error)),
   });
@@ -214,9 +221,12 @@ export function ManageIssues() {
           }
         />
 
-        <div className="mb-5 rounded-2xl border border-line bg-white p-4 shadow-sm">
-          <div className="grid gap-3 lg:grid-cols-[1.5fr_1fr_1fr_1fr_auto] lg:items-end">
-            <FormField label="Search issues">
+        <div className="mb-5 rounded-2xl border border-line bg-surface p-4 shadow-sm">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr_auto] lg:items-end">
+            <FormField
+              label="Search issues"
+              className="sm:col-span-2 lg:col-span-1"
+            >
               <div className="relative">
                 <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
                 <Input
@@ -299,7 +309,7 @@ export function ManageIssues() {
             <Button
               variant="outline"
               size="sm"
-              className="mt-3 bg-white"
+              className="mt-3 bg-surface"
               onClick={() => issuesQuery.refetch()}
             >
               Try again
@@ -313,7 +323,7 @@ export function ManageIssues() {
           </div>
         ) : issues.length > 0 ? (
           <>
-            <div className="hidden overflow-hidden rounded-2xl border border-line bg-white shadow-sm md:block">
+            <div className="hidden overflow-hidden rounded-2xl border border-line bg-surface shadow-sm md:block">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
                   <thead className="border-b border-line bg-stone-50/80 text-[11px] font-bold uppercase tracking-[0.12em] text-stone-500">
@@ -396,7 +406,7 @@ export function ManageIssues() {
               {issues.map((issue) => (
                 <div
                   key={issue.id}
-                  className="rounded-2xl border border-line bg-white p-4 shadow-sm"
+                  className="rounded-2xl border border-line bg-surface p-4 shadow-sm"
                 >
                   <div className="flex items-start gap-3">
                     <CategoryTile category={issue.category} />
@@ -515,7 +525,7 @@ export function ManageIssues() {
                 </div>
                 <Link
                   href={`/issues/${selected.id}`}
-                  className="rounded-lg p-1.5 text-stone-400 hover:bg-white hover:text-brand"
+                  className="rounded-lg p-1.5 text-stone-400 hover:bg-surface hover:text-brand"
                   aria-label="Open public issue page"
                 >
                   <ExternalLink className="h-4 w-4" />

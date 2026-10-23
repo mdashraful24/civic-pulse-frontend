@@ -3,6 +3,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { type ReactNode, useState } from "react";
 import { Toaster } from "sonner";
+import { cachePolicy } from "@/lib/query-cache";
 
 export function QueryProvider({ children }: { children: ReactNode }) {
   const [client] = useState(
@@ -10,9 +11,13 @@ export function QueryProvider({ children }: { children: ReactNode }) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 30_000,
+            ...cachePolicy.list,
             retry: 1,
             refetchOnWindowFocus: false,
+            refetchOnReconnect: true,
+          },
+          mutations: {
+            retry: 0,
           },
         },
       }),

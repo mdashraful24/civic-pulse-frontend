@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { RoleGate } from "@/components/dashboard/auth-guard";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { IssueForm } from "@/components/issues/issue-form";
+import { invalidateIssueCaches } from "@/lib/query-cache";
 import type { Issue } from "@/lib/types";
 
 export default function ReportIssuePage() {
@@ -22,11 +23,13 @@ export default function ReportIssuePage() {
         />
 
         <div className="grid gap-5 lg:grid-cols-[1.5fr_0.7fr] lg:items-start">
-          <div className="rounded-2xl border border-line bg-white p-5 shadow-sm sm:p-6">
+          <div className="rounded-2xl border border-line bg-surface p-5 shadow-sm sm:p-6">
             <IssueForm
               mode="create"
               onSuccess={(issue: Issue) => {
-                // Seed the cache so IssueDetail renders instantly (no re-fetch → no missing image flash)
+                // Refresh list/stat caches, then seed the detail cache so the
+                // new report renders instantly without a redundant re-fetch.
+                invalidateIssueCaches(queryClient);
                 queryClient.setQueryData(["issue", issue.id], issue);
                 router.push(`/issues/${issue.id}`);
               }}
@@ -58,7 +61,7 @@ export default function ReportIssuePage() {
               </ul>
             </div>
 
-            <div className="rounded-2xl border border-line bg-white p-5">
+            <div className="rounded-2xl border border-line bg-surface p-5">
               <p className="text-sm font-bold text-ink">What happens next?</p>
               <ol className="mt-3 space-y-3 text-xs leading-5 text-stone-500">
                 <li className="flex gap-2.5">

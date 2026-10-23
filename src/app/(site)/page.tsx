@@ -21,6 +21,7 @@ import { Skeleton } from "@/components/ui/feedback";
 import { api } from "@/lib/api";
 import { CATEGORY_OPTIONS } from "@/lib/constants";
 import { formatNumber, timeAgo } from "@/lib/format";
+import { cachePolicy } from "@/lib/query-cache";
 
 const steps = [
   {
@@ -45,14 +46,17 @@ export default function LandingPage() {
   const recent = useQuery({
     queryKey: ["public-issues", "recent"],
     queryFn: () => api.issues.listPublic({ limit: 6, sort: "newest" }),
+    ...cachePolicy.live,
   });
   const total = useQuery({
     queryKey: ["public-issues", "count", "total"],
     queryFn: () => api.issues.listPublic({ limit: 1 }),
+    ...cachePolicy.stats,
   });
   const resolved = useQuery({
     queryKey: ["public-issues", "count", "resolved"],
     queryFn: () => api.issues.listPublic({ status: "RESOLVED", limit: 1 }),
+    ...cachePolicy.stats,
   });
 
   const totalCount = total.data?.meta.total ?? 0;
@@ -63,21 +67,21 @@ export default function LandingPage() {
   const recentIssues = recent.data?.items ?? [];
 
   return (
-    <main className="flex-1">
-      <section className="relative overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_80%_10%,#d8e9df_0,transparent_38%),radial-gradient(circle_at_10%_80%,#f6e2bf_0,transparent_35%)]" />
-        <div className="mx-auto grid w-full max-w-7xl gap-12 px-4 pb-16 pt-14 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-16 lg:px-8 lg:pb-24 lg:pt-20">
-          <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-brand/15 bg-white/70 px-3 py-1.5 text-[12px] font-semibold text-brand shadow-sm backdrop-blur">
+    <main className="flex-1 overflow-x-hidden">
+      <section className="relative overflow-x-hidden">
+        <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_80%_10%,#d8e9df_0,transparent_38%),radial-gradient(circle_at_10%_80%,#f6e2bf_0,transparent_35%)] dark:bg-[radial-gradient(circle_at_80%_10%,#123a2f_0,transparent_38%),radial-gradient(circle_at_10%_80%,#3a2d16_0,transparent_35%)]" />
+        <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 pb-14 pt-10 sm:gap-12 sm:px-6 sm:pb-16 sm:pt-14 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-16 lg:px-8 lg:pb-24 lg:pt-20">
+          <div className="min-w-0">
+            <div className="inline-flex items-center gap-2 rounded-full border border-brand/15 bg-surface/70 px-3 py-1.5 text-[12px] font-semibold text-brand shadow-sm backdrop-blur">
               <Sparkles className="h-3.5 w-3.5" />
               Community-powered civic action
             </div>
-            <h1 className="mt-5 max-w-2xl text-[44px] font-semibold leading-[0.98] tracking-[-0.055em] text-ink sm:text-6xl lg:text-[68px]">
+            <h1 className="mt-4 max-w-2xl text-[36px] font-semibold leading-[1.0] tracking-[-0.045em] text-ink xs:text-[44px] sm:text-6xl lg:text-[68px]">
               See it. Report it.{" "}
               <span className="relative whitespace-nowrap text-brand">
                 Fix it.
                 <svg
-                  className="absolute -bottom-2 left-0 h-3 w-full text-accent"
+                  className="absolute -bottom-1.5 left-0 h-2.5 w-full text-accent sm:-bottom-2 sm:h-3"
                   viewBox="0 0 200 12"
                   fill="none"
                   aria-hidden="true"
@@ -91,13 +95,13 @@ export default function LandingPage() {
                 </svg>
               </span>
             </h1>
-            <p className="mt-6 max-w-xl text-[16px] leading-7 text-stone-600 sm:text-lg">
+            <p className="mt-4 max-w-xl text-[15px] leading-6 text-stone-600 sm:mt-6 sm:text-lg sm:leading-7">
               CivicPulse turns everyday neighborhood problems into visible,
               trackable work. Report a pothole, a dark street or a blocked drain
               — then watch the progress happen in public.
             </p>
 
-            <div className="mt-8 flex flex-wrap items-center gap-3">
+            <div className="mt-7 flex flex-col items-stretch gap-2.5 sm:mt-8 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
               {user ? (
                 <Link
                   href={
@@ -127,7 +131,7 @@ export default function LandingPage() {
               </Link>
             </div>
 
-            <div className="mt-10 grid max-w-xl grid-cols-3 divide-x divide-line/80 rounded-2xl border border-line bg-white/65 p-1 shadow-sm backdrop-blur">
+            <div className="mt-8 grid w-full max-w-xl grid-cols-3 divide-x divide-line/80 rounded-2xl border border-line bg-surface/65 p-1 shadow-sm backdrop-blur">
               <HeroStat
                 label="Issues shared"
                 value={totalCount}
@@ -146,44 +150,44 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="relative">
-            <div className="absolute -inset-4 -z-10 rounded-4xl border border-brand/10 bg-brand/5 drop-shadow" />
-            <div className="overflow-hidden rounded-[28px] border border-line bg-white shadow-2xl shadow-ink/20">
-              <div className="flex items-center justify-between border-b border-line bg-[#f8f7f2] px-5 py-4">
-                <div>
-                  <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-stone-500">
+          <div className="relative min-w-0">
+            <div className="absolute -inset-2 -z-10 rounded-4xl border border-brand/10 bg-brand/5 drop-shadow sm:-inset-4" />
+            <div className="overflow-hidden rounded-[22px] border border-line bg-surface shadow-2xl shadow-black/20 sm:rounded-[28px]">
+              <div className="flex items-center justify-between border-b border-line bg-surface-muted px-4 py-3 sm:px-5 sm:py-4">
+                <div className="min-w-0">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-stone-500 sm:text-[11px]">
                     Live community pulse
                   </p>
-                  <p className="mt-1 text-sm font-semibold text-ink">
+                  <p className="mt-0.5 truncate text-sm font-semibold text-ink sm:mt-1">
                     This neighborhood, right now
                   </p>
                 </div>
-                <span className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 ring-1 ring-inset ring-emerald-200">
+                <span className="ml-3 flex shrink-0 items-center gap-1.5 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 ring-1 ring-inset ring-emerald-200 sm:px-2.5 sm:py-1 sm:text-[11px]">
                   <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
                   Live
                 </span>
               </div>
 
               <div className="grid grid-cols-2 gap-px border-b border-line bg-line">
-                <div className="bg-white px-5 py-4">
-                  <p className="text-[11px] font-semibold uppercase tracking-wider text-stone-500">
+                <div className="bg-surface px-4 py-3 sm:px-5 sm:py-4">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-stone-500 sm:text-[11px]">
                     Reports
                   </p>
-                  <p className="mt-1 text-2xl font-bold tracking-tight">
+                  <p className="mt-1 text-xl font-bold tracking-tight sm:text-2xl">
                     {formatNumber(totalCount)}
                   </p>
                 </div>
-                <div className="bg-white px-5 py-4">
-                  <p className="text-[11px] font-semibold uppercase tracking-wider text-stone-500">
+                <div className="bg-surface px-4 py-3 sm:px-5 sm:py-4">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-stone-500 sm:text-[11px]">
                     Resolved
                   </p>
-                  <p className="mt-1 text-2xl font-bold tracking-tight text-brand">
+                  <p className="mt-1 text-xl font-bold tracking-tight text-brand sm:text-2xl">
                     {formatNumber(resolvedCount)}
                   </p>
                 </div>
               </div>
 
-              <div className="px-5 pt-5">
+              <div className="px-4 pt-4 sm:px-5 sm:pt-5">
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-semibold text-stone-600">
                     Resolution rate
@@ -198,7 +202,7 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              <div className="mt-4 grid gap-1 px-3 pb-3">
+              <div className="mt-4 grid grid-cols-1 gap-1 px-2 pb-2 sm:px-3 sm:pb-3">
                 {recent.isLoading ? (
                   [0, 1, 2].map((item) => (
                     <div key={item} className="flex items-center gap-3 p-2">
@@ -214,9 +218,9 @@ export default function LandingPage() {
                     <Link
                       key={issue.id}
                       href={`/issues/${issue.id}`}
-                      className="flex items-center gap-3 rounded-xl p-2 transition hover:bg-stone-50"
+                      className="flex min-w-0 items-center gap-2.5 rounded-xl p-2 transition hover:bg-stone-50 sm:gap-3"
                     >
-                      <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-soft text-brand">
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-soft text-brand">
                         <CategoryIcon
                           category={issue.category}
                           className="h-4 w-4"
@@ -227,24 +231,28 @@ export default function LandingPage() {
                           {issue.title}
                         </span>
                         <span className="mt-0.5 flex items-center gap-1.5 text-[11px] text-stone-500">
-                          <MapPin className="h-3 w-3" />
+                          <MapPin className="h-3 w-3 shrink-0" />
                           <span className="truncate">{issue.location}</span>
-                          <span>·</span>
-                          <span>{timeAgo(issue.createdAt)}</span>
+                          <span className="hidden xs:inline">·</span>
+                          <span className="hidden xs:inline">
+                            {timeAgo(issue.createdAt)}
+                          </span>
                         </span>
                       </span>
-                      <StatusBadge status={issue.status} />
+                      <span className="shrink-0">
+                        <StatusBadge status={issue.status} />
+                      </span>
                     </Link>
                   ))
                 ) : (
-                  <div className="rounded-xl bg-stone-50 px-4 py-6 text-center text-sm text-stone-500">
+                  <div className="rounded-xl bg-stone-50 px-3 py-5 text-center text-sm text-stone-500 sm:px-4 sm:py-6">
                     No reports yet. Be the first to put your neighbourhood on
                     the map.
                   </div>
                 )}
               </div>
 
-              <div className="border-t border-line bg-[#fbfaf6] px-5 py-3">
+              <div className="border-t border-line bg-surface-muted px-4 py-2.5 sm:px-5 sm:py-3">
                 <Link
                   href="/issues"
                   className="flex items-center justify-between text-xs font-semibold text-brand hover:text-brand-dark"
@@ -258,7 +266,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="categories" className="border-y border-line bg-white/50">
+      <section id="categories" className="border-y border-line bg-surface/50">
         <div className="mx-auto w-full max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
@@ -282,9 +290,9 @@ export default function LandingPage() {
               <Link
                 key={category.value}
                 href={`/issues?category=${category.value}`}
-                className="group rounded-2xl border border-line bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-brand/20 hover:shadow-md"
+                className="group rounded-2xl border border-line bg-surface p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-brand/20 hover:shadow-md"
               >
-                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-soft text-brand transition group-hover:bg-brand group-hover:text-white">
+                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-soft text-brand transition group-hover:bg-brand-solid group-hover:text-white">
                   <CategoryIcon category={category.value} className="h-5 w-5" />
                 </span>
                 <p className="mt-4 text-sm font-bold text-ink">
@@ -315,14 +323,14 @@ export default function LandingPage() {
               No lost emails, no mystery ticket numbers. Every report has a
               public status, an owner and a timestamp.
             </p>
-            <div className="mt-6 flex items-center gap-3 rounded-2xl border border-line bg-white p-4">
+            <div className="mt-6 flex items-center gap-3 rounded-2xl border border-line bg-surface p-4">
               <div className="flex -space-x-2">
                 {["AM", "JR", "SK"].map((item) => (
                   <Avatar
                     key={item}
                     name={item}
                     size="sm"
-                    className="border-2 border-white"
+                    className="border-2 border-surface"
                   />
                 ))}
               </div>
@@ -337,10 +345,10 @@ export default function LandingPage() {
             {steps.map((step, index) => (
               <div
                 key={step.title}
-                className="flex gap-5 rounded-2xl border border-line bg-white p-5 shadow-sm sm:p-6"
+                className="flex gap-5 rounded-2xl border border-line bg-surface p-5 shadow-sm sm:p-6"
               >
                 <div className="flex flex-col items-center">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand text-sm font-bold text-white">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-solid text-sm font-bold text-white">
                     {String(index + 1).padStart(2, "0")}
                   </span>
                   {index < steps.length - 1 ? (
@@ -362,7 +370,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="border-t border-line bg-[#f1ede4]">
+      <section className="border-t border-line bg-surface-muted">
         <div className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
@@ -396,7 +404,7 @@ export default function LandingPage() {
                 ))}
               </div>
             ) : (
-              <div className="rounded-2xl border border-dashed border-line bg-white/60 px-6 py-14 text-center">
+              <div className="rounded-2xl border border-dashed border-line bg-surface/60 px-6 py-14 text-center">
                 <p className="font-semibold text-ink">
                   No issues have been reported yet.
                 </p>
@@ -416,7 +424,7 @@ export default function LandingPage() {
       </section>
 
       <section className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="overflow-hidden rounded-[28px] bg-brand px-6 py-10 text-white shadow-xl shadow-brand/20 sm:px-10 sm:py-12">
+        <div className="overflow-hidden rounded-[28px] bg-brand-solid px-6 py-10 text-white shadow-xl shadow-brand/20 sm:px-10 sm:py-12">
           <div className="grid gap-8 lg:grid-cols-[1.3fr_1fr] lg:items-center">
             <div>
               <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-white/70">
@@ -484,15 +492,15 @@ function HeroStat({
   loading: boolean;
 }) {
   return (
-    <div className="px-3 py-3 text-center sm:px-4">
-      <div className="text-lg font-bold tracking-tight text-ink sm:text-xl">
+    <div className="px-2 py-2.5 text-center sm:px-3 sm:py-3">
+      <div className="text-base font-bold tracking-tight text-ink sm:text-lg lg:text-xl">
         {loading ? (
-          <Skeleton className="mx-auto h-6 w-10" />
+          <Skeleton className="mx-auto h-5 w-8 sm:h-6 sm:w-10" />
         ) : (
           formatNumber(value)
         )}
       </div>
-      <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-wider text-stone-500 sm:text-[11px]">
+      <p className="mt-0.5 text-[9px] font-semibold uppercase tracking-wider text-stone-500 sm:text-[10px] lg:text-[11px]">
         {label}
       </p>
     </div>

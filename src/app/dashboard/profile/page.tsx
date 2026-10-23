@@ -29,6 +29,7 @@ import { api, getApiErrorMessage } from "@/lib/api";
 import { IMAGE_ACCEPT, roleLabels } from "@/lib/constants";
 import { formatDateTime } from "@/lib/format";
 import { useObjectUrl } from "@/lib/hooks";
+import { invalidateUserCaches } from "@/lib/query-cache";
 import { changePasswordSchema, validateImageFile } from "@/lib/validation";
 
 type PasswordErrors = {
@@ -63,10 +64,7 @@ export default function ProfilePage() {
   }
 
   const invalidatePhotoCaches = () => {
-    void queryClient.invalidateQueries({ queryKey: ["issue"] });
-    void queryClient.invalidateQueries({ queryKey: ["public-issues"] });
-    void queryClient.invalidateQueries({ queryKey: ["my-issues"] });
-    void queryClient.invalidateQueries({ queryKey: ["assigned-issues"] });
+    invalidateUserCaches(queryClient);
   };
 
   const handlePhoto = (file: File | null) => {
@@ -171,15 +169,15 @@ export default function ProfilePage() {
 
       <div className="grid gap-5 lg:grid-cols-[1fr_1.1fr] lg:items-start">
         <div className="space-y-5">
-          <section className="overflow-hidden rounded-2xl border border-line bg-white shadow-sm">
-            <div className="h-20 bg-[radial-gradient(circle_at_20%_20%,#d5e8dd,transparent_45%),radial-gradient(circle_at_85%_80%,#f5dfb4,transparent_50%)]" />
+          <section className="overflow-hidden rounded-2xl border border-line bg-surface shadow-sm">
+            <div className="h-20 bg-[radial-gradient(circle_at_20%_20%,#d5e8dd,transparent_45%),radial-gradient(circle_at_85%_80%,#f5dfb4,transparent_50%)] dark:bg-[radial-gradient(circle_at_20%_20%,#123a2f,transparent_45%),radial-gradient(circle_at_85%_80%,#3a2d16,transparent_50%)]" />
             <div className="px-5 pb-5">
               <div className="-mt-14 flex flex-wrap items-end justify-between gap-4">
                 <Avatar
                   name={user.name}
                   src={user.imageUrl}
                   size="xl"
-                  className="border-4 border-white shadow-md"
+                  className="border-4 border-surface shadow-md"
                 />
                 <div className="flex flex-wrap justify-end gap-2">
                   <Button
@@ -243,7 +241,7 @@ export default function ProfilePage() {
             </div>
           </section>
 
-          <section className="rounded-2xl border border-line bg-white p-5 shadow-sm">
+          <section className="rounded-2xl border border-line bg-surface p-5 shadow-sm">
             <div className="flex items-center gap-2">
               <UserRound className="h-4 w-4 text-brand" />
               <h2 className="text-sm font-bold uppercase tracking-[0.12em] text-stone-500">
@@ -283,7 +281,7 @@ export default function ProfilePage() {
             <Button
               variant="outline"
               size="sm"
-              className="mt-3 bg-white text-rose-600 hover:border-rose-200 hover:bg-rose-50"
+              className="mt-3 bg-surface text-rose-600 hover:border-rose-200 hover:bg-rose-50"
               loading={logoutPending}
               onClick={() => void handleLogout()}
             >
@@ -294,7 +292,7 @@ export default function ProfilePage() {
         </div>
 
         <div className="space-y-5">
-          <section className="rounded-2xl border border-line bg-white p-5 shadow-sm sm:p-6">
+          <section className="rounded-2xl border border-line bg-surface p-5 shadow-sm sm:p-6">
             <div className="flex items-center gap-2">
               <KeyRound className="h-4 w-4 text-brand" />
               <h2 className="text-sm font-bold uppercase tracking-[0.12em] text-stone-500">

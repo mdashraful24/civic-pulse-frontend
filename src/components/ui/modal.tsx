@@ -45,14 +45,14 @@ export function Modal({
         type="button"
         aria-label="Close dialog"
         onClick={onClose}
-        className="absolute inset-0 bg-ink/40 backdrop-blur-[2px]"
+        className="absolute inset-0 bg-black/50 backdrop-blur-[2px]"
       />
       <div
         role="dialog"
         aria-modal="true"
         aria-label={title}
         className={cn(
-          "relative flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-2xl border border-line bg-white shadow-2xl shadow-ink/20 sm:rounded-2xl",
+          "relative flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-2xl border border-line bg-surface shadow-2xl shadow-black/20 sm:rounded-2xl",
           size === "sm" && "sm:max-w-md",
           size === "md" && "sm:max-w-xl",
           size === "lg" && "sm:max-w-3xl",

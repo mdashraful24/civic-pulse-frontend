@@ -2,6 +2,7 @@ import { ArrowLeft, CheckCircle2, MapPin, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Logo } from "@/components/brand/logo";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const highlights = [
   "Report an issue in under a minute",
@@ -22,7 +23,7 @@ export function AuthShell({
 }) {
   return (
     <div className="grid min-h-dvh lg:grid-cols-[1.05fr_1fr]">
-      <aside className="relative hidden overflow-hidden bg-brand p-10 text-white lg:flex lg:flex-col lg:justify-between xl:p-14">
+      <aside className="relative hidden overflow-hidden bg-brand-solid p-10 text-white lg:flex lg:flex-col lg:justify-between xl:p-14">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(255,255,255,0.16),transparent_35%),radial-gradient(circle_at_85%_80%,rgba(240,178,74,0.24),transparent_40%)]" />
         <div className="relative">
           <Logo className="text-white [&_span:last-child]:text-white" />
@@ -72,13 +73,16 @@ export function AuthShell({
       <main className="flex flex-col bg-paper">
         <div className="flex items-center justify-between px-5 py-5 sm:px-8">
           <Logo className="lg:hidden" />
-          <Link
-            href="/"
-            className="ml-auto inline-flex items-center gap-1.5 text-xs font-semibold text-stone-500 transition hover:text-brand"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" />
-            Back to CivicPulse
-          </Link>
+          <div className="ml-auto flex items-center gap-3">
+            <ThemeToggle />
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-500 transition hover:text-brand"
+            >
+              <ArrowLeft className="h-3.5 w-3.5" />
+              Back to CivicPulse
+            </Link>
+          </div>
         </div>
         <div className="flex flex-1 items-center justify-center px-5 pb-12 sm:px-8">
           <div className="w-full max-w-[420px]">

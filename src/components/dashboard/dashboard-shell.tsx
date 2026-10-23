@@ -19,6 +19,7 @@ import { type ReactNode, useEffect, useState } from "react";
 import { useAuth } from "@/components/auth-provider";
 import { Logo } from "@/components/brand/logo";
 import { RoleBadge } from "@/components/issues/issue-badges";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/format";
@@ -118,7 +119,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
       </div>
 
       <div className="px-4 py-5">
-        <div className="flex items-center gap-3 rounded-2xl border border-line bg-white p-3 shadow-sm">
+        <div className="flex items-center gap-3 rounded-2xl border border-line bg-surface p-3 shadow-sm">
           <Avatar name={user.name} src={user.imageUrl} size="md" />
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-bold text-ink">{user.name}</p>
@@ -145,8 +146,8 @@ export function DashboardShell({ children }: { children: ReactNode }) {
               className={cn(
                 "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-semibold transition",
                 active
-                  ? "bg-brand text-white shadow-sm shadow-brand/20"
-                  : "text-stone-600 hover:bg-black/5 hover:text-ink",
+                  ? "bg-brand-solid text-white shadow-sm shadow-brand/20"
+                  : "text-stone-600 hover:bg-ink/5 hover:text-ink",
               )}
             >
               <item.icon
@@ -165,7 +166,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
         <div className="my-3 h-px bg-line" />
         <Link
           href="/issues"
-          className="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-semibold text-stone-600 transition hover:bg-black/5 hover:text-ink"
+          className="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-semibold text-stone-600 transition hover:bg-ink/5 hover:text-ink"
         >
           <ExternalLink className="h-4 w-4 text-stone-400 group-hover:text-brand" />
           Public issue map
@@ -188,7 +189,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-dvh bg-paper">
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-72 border-r border-line bg-[#fbfaf6] lg:block">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-72 border-r border-line bg-surface-muted lg:block">
         {sidebar}
       </aside>
 
@@ -196,18 +197,18 @@ export function DashboardShell({ children }: { children: ReactNode }) {
         <div className="fixed inset-0 z-40 lg:hidden">
           <button
             type="button"
-            className="absolute inset-0 bg-ink/40 backdrop-blur-[2px]"
+            className="absolute inset-0 bg-black/50 backdrop-blur-[2px]"
             onClick={() => setOpen(false)}
             aria-label="Close menu"
           />
-          <aside className="relative h-full w-[300px] max-w-[86vw] border-r border-line bg-[#fbfaf6] shadow-2xl">
+          <aside className="relative h-full w-[300px] max-w-[86vw] border-r border-line bg-surface-muted shadow-2xl">
             {sidebar}
           </aside>
         </div>
       ) : null}
 
       <div className="flex min-h-dvh flex-col lg:pl-72">
-        <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-3 border-b border-line bg-paper/90 px-4 backdrop-blur-lg sm:px-6 lg:px-8">
+        <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-3 border-b border-line bg-paper/95 px-4 backdrop-blur-md sm:px-6 lg:px-8">
           <div className="flex items-center gap-3">
             <Button
               variant="ghost"
@@ -227,16 +228,17 @@ export function DashboardShell({ children }: { children: ReactNode }) {
           </div>
 
           <div className="flex items-center gap-2">
+            <ThemeToggle />
             <Link
               href="/issues"
-              className="hidden items-center gap-1.5 rounded-lg px-2.5 py-2 text-xs font-semibold text-stone-500 transition hover:bg-black/5 hover:text-ink sm:flex"
+              className="hidden items-center gap-1.5 rounded-lg px-2.5 py-2 text-xs font-semibold text-stone-500 transition hover:bg-ink/5 hover:text-ink sm:flex"
             >
               <ExternalLink className="h-3.5 w-3.5" />
               Public map
             </Link>
             <Link
               href="/dashboard/profile"
-              className="flex items-center gap-2 rounded-xl py-1 pl-1 pr-2 transition hover:bg-black/5"
+              className="flex items-center gap-2 rounded-xl py-1 pl-1 pr-2 transition hover:bg-ink/5"
             >
               <Avatar name={user.name} src={user.imageUrl} size="sm" />
               <span className="hidden max-w-28 truncate text-xs font-semibold sm:block">

@@ -23,7 +23,7 @@ export function IssueCard({
     <Link
       href={`/issues/${issue.id}`}
       className={cn(
-        "group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-white shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-brand/20 hover:shadow-lg hover:shadow-ink/5",
+        "group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-surface shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-brand/20 hover:shadow-lg hover:shadow-black/5",
         className,
       )}
     >
@@ -42,10 +42,10 @@ export function IssueCard({
             className="object-cover transition duration-500 group-hover:scale-[1.03]"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center bg-[radial-gradient(circle_at_25%_20%,#dbe9e1,transparent_55%),radial-gradient(circle_at_80%_85%,#f7e2bd,transparent_50%)]">
+          <div className="flex h-full w-full items-center justify-center bg-[radial-gradient(circle_at_25%_20%,#dbe9e1,transparent_55%),radial-gradient(circle_at_80%_85%,#f7e2bd,transparent_50%)] dark:bg-[radial-gradient(circle_at_25%_20%,#122f27,transparent_55%),radial-gradient(circle_at_80%_85%,#3a2d16,transparent_50%)]">
             <CategoryTile
               category={issue.category}
-              className="h-14 w-14 rounded-2xl bg-white/80 shadow-sm"
+              className="h-14 w-14 rounded-2xl bg-surface/80 shadow-sm"
             />
           </div>
         )}

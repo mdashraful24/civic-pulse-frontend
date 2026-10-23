@@ -1,6 +1,11 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import {
   Camera,
   ClipboardList,
@@ -30,6 +35,7 @@ import { api, getApiErrorMessage } from "@/lib/api";
 import { IMAGE_ACCEPT, STATUS_OPTIONS } from "@/lib/constants";
 import { formatDate, formatNumber, timeAgo } from "@/lib/format";
 import { useDebouncedValue, useObjectUrl } from "@/lib/hooks";
+import { cachePolicy, invalidateIssueCaches } from "@/lib/query-cache";
 import type { Issue, IssueStatus } from "@/lib/types";
 import { validateImageFile } from "@/lib/validation";
 
@@ -61,6 +67,8 @@ export default function MyIssuesPage() {
         limit: PAGE_SIZE,
         sort: "newest",
       }),
+    placeholderData: keepPreviousData,
+    ...cachePolicy.list,
   });
 
   const deleteMutation = useMutation({
@@ -68,8 +76,7 @@ export default function MyIssuesPage() {
     onSuccess: () => {
       toast.success("Issue deleted.");
       setDeleting(null);
-      void queryClient.invalidateQueries({ queryKey: ["my-issues"] });
-      void queryClient.invalidateQueries({ queryKey: ["dashboard", "stats"] });
+      invalidateIssueCaches(queryClient);
     },
     onError: (error) => toast.error(getApiErrorMessage(error)),
   });
@@ -79,10 +86,7 @@ export default function MyIssuesPage() {
   const photoPreview = useObjectUrl(pendingPhoto?.file ?? null);
 
   const invalidate = () => {
-    void queryClient.invalidateQueries({ queryKey: ["my-issues"] });
-    void queryClient.invalidateQueries({ queryKey: ["dashboard", "stats"] });
-    void queryClient.invalidateQueries({ queryKey: ["issue"] });
-    void queryClient.invalidateQueries({ queryKey: ["public-issues"] });
+    invalidateIssueCaches(queryClient);
   };
 
   const handlePhoto = (file: File | null) => {
@@ -138,7 +142,7 @@ export default function MyIssuesPage() {
           }
         />
 
-        <div className="mb-5 rounded-2xl border border-line bg-white p-4 shadow-sm">
+        <div className="mb-5 rounded-2xl border border-line bg-surface p-4 shadow-sm">
           <div className="grid gap-3 sm:grid-cols-[1.6fr_1fr]">
             <FormField label="Search my issues">
               <Input
@@ -177,7 +181,7 @@ export default function MyIssuesPage() {
             <Button
               variant="outline"
               size="sm"
-              className="mt-3 bg-white"
+              className="mt-3 bg-surface"
               onClick={() => query.refetch()}
             >
               Try again
@@ -354,7 +358,7 @@ function MyIssueRow({
   const editable = issue.status === "PENDING";
 
   return (
-    <div className="rounded-2xl border border-line bg-white p-4 shadow-sm sm:p-5">
+    <div className="rounded-2xl border border-line bg-surface p-4 shadow-sm sm:p-5">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
         <div className="flex items-center gap-3 sm:block">
           <CategoryTile category={issue.category} className="h-11 w-11" />

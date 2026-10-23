@@ -128,7 +128,7 @@ export default function VerifyEmailPage() {
       }
     >
       <div className="mb-5 flex items-center gap-3 rounded-2xl border border-brand/15 bg-brand-soft/60 px-4 py-3.5">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-brand">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-surface text-brand">
           <MailCheck className="h-5 w-5" />
         </span>
         <div className="min-w-0">
@@ -160,6 +160,7 @@ export default function VerifyEmailPage() {
             onChange={(event) => setEmail(event.target.value)}
             placeholder="you@example.com"
             maxLength={254}
+            disabled={loading || resending}
           />
         </FormField>
 
@@ -183,6 +184,7 @@ export default function VerifyEmailPage() {
               }
               placeholder="000000"
               className="pl-10 text-center font-mono text-lg tracking-[0.4em]"
+              disabled={loading || resending}
             />
           </div>
         </FormField>
@@ -197,10 +199,11 @@ export default function VerifyEmailPage() {
           type="submit"
           size="lg"
           loading={loading}
+          disabled={loading || resending}
           className="mt-1 w-full"
         >
-          Verify email
-          <ArrowRight className="h-4 w-4" />
+          {loading ? "Verifying…" : "Verify email"}
+          {loading ? null : <ArrowRight className="h-4 w-4" />}
         </Button>
       </form>
 
@@ -209,10 +212,11 @@ export default function VerifyEmailPage() {
           variant="ghost"
           size="sm"
           loading={resending}
+          disabled={loading || resending}
           onClick={() => void resend()}
         >
-          <RefreshCw className="h-3.5 w-3.5" />
-          Resend code
+          {resending ? null : <RefreshCw className="h-3.5 w-3.5" />}
+          {resending ? "Resending…" : "Resend code"}
         </Button>
         <p className="text-[11px] text-stone-400">
           In development, the code is printed in the API console.

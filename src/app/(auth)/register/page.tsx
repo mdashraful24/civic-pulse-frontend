@@ -145,7 +145,7 @@ export default function RegisterPage() {
       }
     >
       <form className="grid gap-4" onSubmit={submit}>
-        <div className="flex items-center gap-4 rounded-2xl border border-dashed border-line bg-white/70 p-3.5">
+        <div className="flex items-center gap-4 rounded-2xl border border-dashed border-line bg-surface/70 p-3.5">
           <div className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-brand-soft text-brand">
             {preview ? (
               <Image
@@ -167,7 +167,7 @@ export default function RegisterPage() {
             <p className="mt-0.5 text-[11px] leading-5 text-stone-500">
               JPEG, PNG, WebP or GIF · max 5 MB
             </p>
-            <div className="mt-2 flex items-center gap-2">
+            <div className="mt-2 flex flex-wrap items-center gap-2">
               <input
                 ref={fileInputRef}
                 type="file"
@@ -219,6 +219,7 @@ export default function RegisterPage() {
             onChange={(event) => setName(event.target.value)}
             placeholder="Ayesha Rahman"
             maxLength={80}
+            disabled={loading}
           />
         </FormField>
 
@@ -236,6 +237,7 @@ export default function RegisterPage() {
             onChange={(event) => setEmail(event.target.value)}
             placeholder="you@example.com"
             maxLength={254}
+            disabled={loading}
           />
         </FormField>
 
@@ -256,12 +258,14 @@ export default function RegisterPage() {
               placeholder="Create a strong password"
               className="pr-11"
               maxLength={128}
+              disabled={loading}
             />
             <button
               type="button"
               onClick={() => setShowPassword((current) => !current)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-2 text-stone-400 transition hover:bg-stone-100 hover:text-ink"
+              className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-2 text-stone-400 transition hover:bg-stone-100 hover:text-ink disabled:opacity-50"
               aria-label={showPassword ? "Hide password" : "Show password"}
+              disabled={loading}
             >
               {showPassword ? (
                 <EyeOff className="h-4 w-4" />
@@ -286,6 +290,7 @@ export default function RegisterPage() {
             onChange={(event) => setConfirmPassword(event.target.value)}
             placeholder="Repeat your password"
             maxLength={128}
+            disabled={loading}
           />
         </FormField>
 
@@ -299,10 +304,11 @@ export default function RegisterPage() {
           type="submit"
           size="lg"
           loading={loading}
+          disabled={loading}
           className="mt-1 w-full"
         >
-          Create account
-          <ArrowRight className="h-4 w-4" />
+          {loading ? "Creating account…" : "Create account"}
+          {loading ? null : <ArrowRight className="h-4 w-4" />}
         </Button>
       </form>
 

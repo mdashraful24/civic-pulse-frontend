@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useAuth } from "@/components/auth-provider";
 import { Logo } from "@/components/brand/logo";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Avatar } from "@/components/ui/avatar";
 import { Button, buttonStyles } from "@/components/ui/button";
 import { roleLabels } from "@/lib/constants";
@@ -20,7 +21,7 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line/80 bg-paper/90 backdrop-blur-lg">
+    <header className="sticky top-0 z-40 border-b border-line/80 bg-paper/95 backdrop-blur-md">
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
         <Logo />
 
@@ -29,7 +30,7 @@ export function SiteHeader() {
             <Link
               key={link.href}
               href={link.href}
-              className="rounded-lg px-3.5 py-2 text-sm font-medium text-stone-600 transition hover:bg-black/5 hover:text-ink"
+              className="rounded-lg px-3.5 py-2 text-sm font-medium text-stone-600 transition hover:bg-ink/5 hover:text-ink"
             >
               {link.label}
             </Link>
@@ -37,6 +38,7 @@ export function SiteHeader() {
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
+          <ThemeToggle />
           {loading ? (
             <div className="h-10 w-36 animate-pulse rounded-xl bg-stone-200/70" />
           ) : user ? (
@@ -47,7 +49,7 @@ export function SiteHeader() {
               </Link>
               <Link
                 href="/dashboard/profile"
-                className="flex items-center gap-2 rounded-xl py-1 pl-1 pr-2 transition hover:bg-black/5"
+                className="flex items-center gap-2 rounded-xl py-1 pl-1 pr-2 transition hover:bg-ink/5"
                 title={`${user.name} · ${roleLabels[user.role]}`}
               >
                 <Avatar name={user.name} src={user.imageUrl} size="sm" />
@@ -71,15 +73,17 @@ export function SiteHeader() {
           )}
         </div>
 
-        <Button
-          variant="ghost"
-          size="icon"
-          className="md:hidden"
-          onClick={() => setOpen((current) => !current)}
-          aria-label="Toggle navigation"
-        >
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </Button>
+        <div className="flex items-center gap-2 md:hidden">
+          <ThemeToggle />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setOpen((current) => !current)}
+            aria-label="Toggle navigation"
+          >
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
+        </div>
       </div>
 
       {open ? (
@@ -90,7 +94,7 @@ export function SiteHeader() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setOpen(false)}
-                className="rounded-lg px-3 py-2.5 text-sm font-medium text-stone-700 hover:bg-black/5"
+                className="rounded-lg px-3 py-2.5 text-sm font-medium text-stone-700 hover:bg-ink/5"
               >
                 {link.label}
               </Link>

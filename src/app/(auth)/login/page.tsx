@@ -127,6 +127,7 @@ export default function LoginPage() {
             onChange={(event) => setEmail(event.target.value)}
             placeholder="you@example.com"
             maxLength={254}
+            disabled={pending !== null}
           />
         </FormField>
 
@@ -146,12 +147,14 @@ export default function LoginPage() {
               placeholder="Your password"
               className="pr-11"
               maxLength={128}
+              disabled={pending !== null}
             />
             <button
               type="button"
               onClick={() => setShowPassword((current) => !current)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-2 text-stone-400 transition hover:bg-stone-100 hover:text-ink"
+              className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-2 text-stone-400 transition hover:bg-stone-100 hover:text-ink disabled:opacity-50"
               aria-label={showPassword ? "Hide password" : "Show password"}
+              disabled={pending !== null}
             >
               {showPassword ? (
                 <EyeOff className="h-4 w-4" />
@@ -172,10 +175,11 @@ export default function LoginPage() {
           type="submit"
           size="lg"
           loading={pending === "form"}
+          disabled={pending !== null}
           className="mt-1 w-full"
         >
-          Sign in
-          <ArrowRight className="h-4 w-4" />
+          {pending === "form" ? "Signing in…" : "Sign in"}
+          {pending === "form" ? null : <ArrowRight className="h-4 w-4" />}
         </Button>
       </form>
 
@@ -210,8 +214,10 @@ export default function LoginPage() {
                 }
                 className="flex-col gap-1.5 py-2.5"
               >
-                <item.icon className="h-4 w-4 text-brand" />
-                {item.label}
+                {pending === item.role ? null : (
+                  <item.icon className="h-4 w-4 text-brand" />
+                )}
+                {pending === item.role ? "Signing in…" : item.label}
               </Button>
             ))}
           </div>

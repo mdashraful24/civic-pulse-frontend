@@ -1,35 +1,146 @@
 @import "tailwindcss";
 
-@theme inline {
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --breakpoint-xs: 30rem;
   --color-paper: #f7f5ef;
   --color-ink: #14201f;
   --color-brand: #0f5c4d;
   --color-brand-dark: #0a4338;
   --color-brand-soft: #e4efe9;
+  --color-brand-solid: #0f5c4d;
+  --color-brand-solid-hover: #0a4338;
   --color-accent: #f0b24a;
   --color-accent-strong: #e3a235;
+  --color-accent-ink: #14201f;
   --color-line: #e3dfd4;
+  --color-surface: #ffffff;
+  --color-surface-muted: #fbfaf6;
+  --color-surface-strong: #f1ede4;
+}
+
+@theme inline {
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
 :root {
+  color-scheme: light;
   --background: #f7f5ef;
   --foreground: #14201f;
 }
 
+html.dark {
+  color-scheme: dark;
+  --background: #0f1615;
+  --foreground: #f2efe6;
+
+  --color-paper: #0f1615;
+  --color-ink: #f2efe6;
+  --color-brand: #4fd1b1;
+  --color-brand-dark: #7ae0c7;
+  --color-brand-soft: #13332b;
+  --color-brand-solid: #11705c;
+  --color-brand-solid-hover: #0d5b4a;
+  --color-accent: #f0b24a;
+  --color-accent-strong: #e3a235;
+  --color-accent-ink: #14201f;
+  --color-line: #2a3835;
+  --color-surface: #18211f;
+  --color-surface-muted: #131b1a;
+  --color-surface-strong: #101716;
+
+  --color-stone-50: #1b2422;
+  --color-stone-100: #202b28;
+  --color-stone-200: #293733;
+  --color-stone-300: #364742;
+  --color-stone-400: #7f8d88;
+  --color-stone-500: #a3b0ab;
+  --color-stone-600: #c3ccc8;
+  --color-stone-700: #d9e0dd;
+
+  --color-rose-50: #2b1619;
+  --color-rose-200: #5a2b33;
+  --color-rose-500: #d97a87;
+  --color-rose-600: #ef97a2;
+  --color-rose-700: #f5b0ba;
+  --color-rose-800: #f8cad1;
+
+  --color-emerald-50: #10261f;
+  --color-emerald-200: #1d4a3a;
+  --color-emerald-500: #45b08c;
+  --color-emerald-600: #6bcbaa;
+  --color-emerald-700: #91dcbf;
+  --color-emerald-800: #b6e9d3;
+  --color-emerald-900: #d6f4e5;
+
+  --color-amber-50: #2b2110;
+  --color-amber-100: #3a2d16;
+  --color-amber-200: #5c4720;
+  --color-amber-400: #b58a3b;
+  --color-amber-500: #d9a94e;
+  --color-amber-600: #efc06b;
+  --color-amber-700: #f5d08a;
+  --color-amber-800: #f8e0b0;
+  --color-amber-900: #fbeecf;
+
+  --color-sky-50: #10202a;
+  --color-sky-100: #162e3a;
+  --color-sky-200: #1d4355;
+  --color-sky-400: #3380a0;
+  --color-sky-600: #74bfd9;
+  --color-sky-700: #9ad4e7;
+  --color-sky-800: #bde4f0;
+
+  --color-orange-50: #2a1b10;
+  --color-orange-200: #5a3820;
+  --color-orange-700: #f0b27a;
+
+  --color-teal-50: #0f2422;
+  --color-teal-200: #1c4a45;
+  --color-teal-700: #6fd6c8;
+
+  --color-violet-50: #211a2e;
+  --color-violet-200: #3f3260;
+  --color-violet-700: #c4aef7;
+
+  --color-blue-50: #131f2e;
+  --color-blue-200: #23405f;
+  --color-blue-700: #91bdf2;
+
+  --color-indigo-100: #1f2147;
+  --color-indigo-700: #aab2f8;
+
+  --color-lime-100: #26310f;
+  --color-lime-700: #c4e88a;
+}
+
 * {
   border-color: var(--color-line);
+  -webkit-tap-highlight-color: transparent;
 }
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+  scrollbar-gutter: stable;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
   background: var(--color-paper);
   color: var(--color-ink);
   font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior-y: contain;
+}
+
+button,
+a,
+[role="button"] {
+  touch-action: manipulation;
 }
 
 ::selection {
@@ -52,12 +163,38 @@ body {
   border-radius: 999px;
 }
 
+html.dark ::-webkit-scrollbar-thumb {
+  background: #34443f;
+}
+
 ::-webkit-scrollbar-thumb:hover {
   background: #aaa394;
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #465852;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.skeleton-shimmer {
+  will-change: transform;
+  animation: shimmer 1.8s linear infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  .skeleton-shimmer {
+    animation: none;
   }
 }

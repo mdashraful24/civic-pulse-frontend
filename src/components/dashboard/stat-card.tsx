@@ -27,7 +27,7 @@ export function StatCard({
   loading?: boolean;
 }) {
   return (
-    <div className="rounded-2xl border border-line bg-white p-4 shadow-sm sm:p-5">
+    <div className="rounded-2xl border border-line bg-surface p-4 shadow-sm sm:p-5">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-stone-500">

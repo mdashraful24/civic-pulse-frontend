@@ -18,7 +18,7 @@ export function Logo({
       )}
       aria-label="CivicPulse home"
     >
-      <span className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-brand text-white shadow-sm shadow-brand/25 transition group-hover:-rotate-3">
+      <span className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-brand-solid text-white shadow-sm shadow-brand/25 transition group-hover:-rotate-3">
         <Activity className="h-5 w-5" strokeWidth={2.4} />
         <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-paper bg-accent" />
       </span>

@@ -31,6 +31,7 @@ import { Skeleton } from "@/components/ui/feedback";
 import { api, getApiErrorMessage } from "@/lib/api";
 import { categoryLabels, statusLabels } from "@/lib/constants";
 import { formatDateTime, timeAgo, truncate } from "@/lib/format";
+import { cachePolicy } from "@/lib/query-cache";
 import type { IssueHistoryEntry } from "@/lib/types";
 
 export function IssueDetail({ issueId }: { issueId: string }) {
@@ -38,10 +39,12 @@ export function IssueDetail({ issueId }: { issueId: string }) {
   const issueQuery = useQuery({
     queryKey: ["issue", issueId],
     queryFn: () => api.issues.get(issueId),
+    ...cachePolicy.detail,
   });
   const historyQuery = useQuery({
     queryKey: ["issue", issueId, "history"],
     queryFn: () => api.issues.history(issueId),
+    ...cachePolicy.live,
   });
 
   const issue = issueQuery.data;
@@ -98,7 +101,7 @@ export function IssueDetail({ issueId }: { issueId: string }) {
 
   return (
     <main className="flex-1">
-      <section className="border-b border-line bg-[#f3efe6]">
+      <section className="border-b border-line bg-surface-muted">
         <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <Link
@@ -128,7 +131,7 @@ export function IssueDetail({ issueId }: { issueId: string }) {
           <div className="mt-5 flex flex-wrap items-center gap-2">
             <StatusBadge status={issue.status} />
             <PriorityBadge priority={issue.priority} />
-            <Badge className="bg-white text-stone-600 ring-line">
+            <Badge className="bg-surface text-stone-600 ring-line">
               <CategoryTile
                 category={issue.category}
                 className="h-4 w-4 bg-transparent p-0 text-current"
@@ -173,7 +176,7 @@ export function IssueDetail({ issueId }: { issueId: string }) {
               />
             </div>
           ) : (
-            <div className="flex aspect-[16/8] flex-col items-center justify-center rounded-2xl border border-dashed border-line bg-white text-center">
+            <div className="flex aspect-[16/8] flex-col items-center justify-center rounded-2xl border border-dashed border-line bg-surface text-center">
               <CategoryTile category={issue.category} className="h-14 w-14" />
               <p className="mt-3 text-sm font-semibold text-stone-600">
                 No photo was attached to this report.
@@ -181,7 +184,7 @@ export function IssueDetail({ issueId }: { issueId: string }) {
             </div>
           )}
 
-          <section className="rounded-2xl border border-line bg-white p-5 shadow-sm sm:p-6">
+          <section className="rounded-2xl border border-line bg-surface p-5 shadow-sm sm:p-6">
             <div className="flex items-center gap-2">
               <PencilRuler className="h-4 w-4 text-brand" />
               <h2 className="text-sm font-bold uppercase tracking-[0.12em] text-stone-500">
@@ -212,7 +215,7 @@ export function IssueDetail({ issueId }: { issueId: string }) {
             </section>
           ) : null}
 
-          <section className="rounded-2xl border border-line bg-white p-5 shadow-sm sm:p-6">
+          <section className="rounded-2xl border border-line bg-surface p-5 shadow-sm sm:p-6">
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <History className="h-4 w-4 text-brand" />
@@ -242,7 +245,7 @@ export function IssueDetail({ issueId }: { issueId: string }) {
         </div>
 
         <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
-          <div className="rounded-2xl border border-line bg-white p-5 shadow-sm">
+          <div className="rounded-2xl border border-line bg-surface p-5 shadow-sm">
             <h2 className="text-sm font-bold uppercase tracking-[0.12em] text-stone-500">
               Issue details
             </h2>
@@ -282,7 +285,7 @@ export function IssueDetail({ issueId }: { issueId: string }) {
             </dl>
           </div>
 
-          <div className="rounded-2xl border border-line bg-white p-5 shadow-sm">
+          <div className="rounded-2xl border border-line bg-surface p-5 shadow-sm">
             <h2 className="text-sm font-bold uppercase tracking-[0.12em] text-stone-500">
               People
             </h2>
@@ -328,7 +331,7 @@ export function IssueDetail({ issueId }: { issueId: string }) {
             <Button
               variant="outline"
               size="sm"
-              className="mt-3 bg-white"
+              className="mt-3 bg-surface"
               onClick={copyLink}
             >
               <Copy className="h-3.5 w-3.5" />
@@ -380,7 +383,7 @@ function Timeline({ history }: { history: IssueHistoryEntry[] }) {
           {index < history.length - 1 ? (
             <span className="absolute left-[15px] top-8 h-[calc(100%-16px)] w-px bg-line" />
           ) : null}
-          <span className="relative z-10 mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-line bg-white text-brand">
+          <span className="relative z-10 mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-line bg-surface text-brand">
             {entry.newStatus === "RESOLVED" ? (
               <CheckCircle2 className="h-4 w-4 text-emerald-600" />
             ) : entry.newStatus === "IN_PROGRESS" ? (

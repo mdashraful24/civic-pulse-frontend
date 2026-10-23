@@ -23,8 +23,13 @@ export function PageLoader({ label = "Loading" }: { label?: string }) {
 export function Skeleton({ className }: { className?: string }) {
   return (
     <div
-      className={cn("animate-pulse rounded-xl bg-stone-200/70", className)}
-    />
+      className={cn(
+        "relative overflow-hidden rounded-xl bg-stone-200/60",
+        className,
+      )}
+    >
+      <div className="skeleton-shimmer absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+    </div>
   );
 }
 
@@ -44,7 +49,7 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center rounded-2xl border border-dashed border-line bg-white/60 px-6 py-14 text-center",
+        "flex flex-col items-center justify-center rounded-2xl border border-dashed border-line bg-surface/60 px-6 py-14 text-center",
         className,
       )}
     >

@@ -24,6 +24,7 @@ import {
 } from "@/lib/constants";
 import { formatNumber } from "@/lib/format";
 import { useDebouncedValue } from "@/lib/hooks";
+import { cachePolicy } from "@/lib/query-cache";
 import type { IssueCategory, IssuePriority, IssueStatus } from "@/lib/types";
 
 const PAGE_SIZE = 9;
@@ -122,6 +123,7 @@ export function IssueBrowser() {
         limit: PAGE_SIZE,
       }),
     placeholderData: keepPreviousData,
+    ...cachePolicy.list,
   });
 
   const issues = query.data?.items ?? [];
@@ -154,9 +156,9 @@ export function IssueBrowser() {
 
   return (
     <main className="flex-1">
-      <section className="relative overflow-hidden border-b border-line bg-[radial-gradient(circle_at_82%_20%,#d8e9df_0,transparent_34%),radial-gradient(circle_at_8%_90%,#f7e3bf_0,transparent_32%)]">
+      <section className="relative overflow-hidden border-b border-line bg-[radial-gradient(circle_at_82%_20%,#d8e9df_0,transparent_34%),radial-gradient(circle_at_8%_90%,#f7e3bf_0,transparent_32%)] dark:bg-[radial-gradient(circle_at_82%_20%,#123a2f_0,transparent_34%),radial-gradient(circle_at_8%_90%,#3a2d16_0,transparent_32%)]">
         <div className="mx-auto w-full max-w-7xl px-4 pb-16 pt-12 sm:px-6 lg:px-8 lg:pb-20 lg:pt-16">
-          <p className="inline-flex items-center gap-2 rounded-full border border-brand/15 bg-white/70 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-brand">
+          <p className="inline-flex items-center gap-2 rounded-full border border-brand/15 bg-surface/70 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-brand">
             Public issue map
           </p>
           <h1 className="mt-4 max-w-3xl text-4xl font-semibold leading-[1.02] tracking-[-0.045em] text-ink sm:text-5xl">
@@ -180,9 +182,12 @@ export function IssueBrowser() {
       </section>
 
       <div className="mx-auto -mt-7 w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="relative z-10 rounded-2xl border border-line bg-white p-4 shadow-lg shadow-ink/5 sm:p-5">
-          <div className="grid gap-3 lg:grid-cols-[1.5fr_1fr_1fr_1fr_auto] lg:items-end">
-            <FormField label="Search reports">
+        <div className="relative z-10 rounded-2xl border border-line bg-surface p-4 shadow-lg shadow-black/5 sm:p-5">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr_auto] lg:items-end">
+            <FormField
+              label="Search reports"
+              className="sm:col-span-2 lg:col-span-1"
+            >
               <div className="relative">
                 <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
                 <Input
@@ -325,7 +330,7 @@ export function IssueBrowser() {
                 <p className="text-sm text-stone-500">
                   Page {meta.page} of {meta.totalPages}
                 </p>
-                <div className="flex items-center gap-1.5">
+                <div className="flex flex-wrap items-center justify-center gap-1.5 sm:justify-end">
                   <Button
                     variant="outline"
                     size="sm"

@@ -1,6 +1,11 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import {
   CheckCircle2,
   ClipboardCheck,
@@ -27,6 +32,7 @@ import { api, getApiErrorMessage } from "@/lib/api";
 import { STATUS_OPTIONS } from "@/lib/constants";
 import { formatDateTime, formatNumber, timeAgo } from "@/lib/format";
 import { useDebouncedValue } from "@/lib/hooks";
+import { cachePolicy, invalidateIssueCaches } from "@/lib/query-cache";
 import type { Issue, IssueStatus } from "@/lib/types";
 import { updateIssueStatusSchema } from "@/lib/validation";
 
@@ -60,6 +66,8 @@ function AssignedIssuesContent() {
         limit: PAGE_SIZE,
         sort: "newest",
       }),
+    placeholderData: keepPreviousData,
+    ...cachePolicy.list,
   });
 
   const statusMutation = useMutation({
@@ -84,9 +92,7 @@ function AssignedIssuesContent() {
       );
       setResolving(null);
       setNote("");
-      void queryClient.invalidateQueries({ queryKey: ["assigned-issues"] });
-      void queryClient.invalidateQueries({ queryKey: ["dashboard", "stats"] });
-      void queryClient.invalidateQueries({ queryKey: ["issue"] });
+      invalidateIssueCaches(queryClient);
     },
     onError: (error) => toast.error(getApiErrorMessage(error)),
   });
@@ -126,7 +132,7 @@ function AssignedIssuesContent() {
           description="Start a job, update its status and leave a clear resolution note when it is done."
         />
 
-        <div className="mb-5 rounded-2xl border border-line bg-white p-4 shadow-sm">
+        <div className="mb-5 rounded-2xl border border-line bg-surface p-4 shadow-sm">
           <div className="grid gap-3 sm:grid-cols-[1.6fr_1fr]">
             <FormField label="Search assigned issues">
               <div className="relative">
@@ -169,7 +175,7 @@ function AssignedIssuesContent() {
             <Button
               variant="outline"
               size="sm"
-              className="mt-3 bg-white"
+              className="mt-3 bg-surface"
               onClick={() => query.refetch()}
             >
               Try again
@@ -309,7 +315,7 @@ function AssignedIssueRow({
   starting: boolean;
 }) {
   return (
-    <div className="rounded-2xl border border-line bg-white p-4 shadow-sm sm:p-5">
+    <div className="rounded-2xl border border-line bg-surface p-4 shadow-sm sm:p-5">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
         <CategoryTile category={issue.category} className="h-11 w-11" />
         <div className="min-w-0 flex-1">
