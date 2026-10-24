@@ -29,7 +29,7 @@ export function QueryProvider({ children }: { children: ReactNode }) {
       <Toaster
         position="top-right"
         richColors
-        closeButton
+        // closeButton
         toastOptions={{ duration: 4200 }}
       />
     </QueryClientProvider>

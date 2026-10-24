@@ -27,8 +27,9 @@ import {
 import { IssueForm } from "@/components/issues/issue-form";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonStyles } from "@/components/ui/button";
+import { CustomSelect } from "@/components/ui/custom-select";
 import { EmptyState, Skeleton } from "@/components/ui/feedback";
-import { FormField, Input, Select } from "@/components/ui/field";
+import { FormField, Input } from "@/components/ui/field";
 import { Modal } from "@/components/ui/modal";
 import { PhotoPreviewDialog } from "@/components/ui/photo-preview-dialog";
 import { api, getApiErrorMessage } from "@/lib/api";
@@ -156,20 +157,15 @@ export default function MyIssuesPage() {
               />
             </FormField>
             <FormField label="Status">
-              <Select
+              <CustomSelect
                 value={status}
-                onChange={(event) => {
-                  setStatus(event.target.value as IssueStatus | "");
+                onChange={(value) => {
+                  setStatus(value as IssueStatus | "");
                   setPage(1);
                 }}
-              >
-                <option value="">Any status</option>
-                {STATUS_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </Select>
+                placeholder="Any status"
+                options={STATUS_OPTIONS}
+              />
             </FormField>
           </div>
         </div>
@@ -297,20 +293,15 @@ export default function MyIssuesPage() {
           description="This cannot be undone. The public timeline and any attached photo will also be removed."
           size="sm"
           footer={
-            <>
-              <Button variant="ghost" onClick={() => setDeleting(null)}>
-                Keep it
-              </Button>
-              <Button
-                variant="danger"
-                loading={deleteMutation.isPending}
-                onClick={() => {
-                  if (deleting) deleteMutation.mutate(deleting);
-                }}
-              >
-                Delete report
-              </Button>
-            </>
+            <Button
+              variant="danger"
+              loading={deleteMutation.isPending}
+              onClick={() => {
+                if (deleting) deleteMutation.mutate(deleting);
+              }}
+            >
+              Delete report
+            </Button>
           }
         >
           {deleting ? (

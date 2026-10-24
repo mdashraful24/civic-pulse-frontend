@@ -87,16 +87,18 @@ export function DashboardShell({ children }: { children: ReactNode }) {
 
   if (!user) return null;
 
+  const path = pathname || "";
+  const normalized = path.replace(/\/$/, "");
   const items = navItems.filter((item) => item.roles.includes(user.role));
   const current =
     items
       .slice()
       .sort((a, b) => b.href.length - a.href.length)
-      .find((item) =>
-        item.href === "/dashboard"
-          ? pathname === item.href
-          : pathname.startsWith(item.href),
-      ) ?? items[0];
+      .find((item) => {
+        const href = item.href.replace(/\/$/, "");
+        if (href === "/dashboard") return normalized === "/dashboard";
+        return normalized.startsWith(href);
+      }) ?? items[0];
 
   const handleLogout = async () => {
     setLoggingOut(true);
@@ -135,18 +137,19 @@ export function DashboardShell({ children }: { children: ReactNode }) {
           Workspace
         </p>
         {items.map((item) => {
+          const href = item.href.replace(/\/$/, "");
           const active =
-            item.href === "/dashboard"
-              ? pathname === item.href
-              : pathname.startsWith(item.href);
+            href === "/dashboard"
+              ? normalized === "/dashboard"
+              : normalized.startsWith(href);
           return (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-semibold transition",
+                "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-semibold transition",
                 active
-                  ? "bg-brand-solid text-white shadow-sm shadow-brand/20"
+                  ? "bg-brand-soft text-brand before:absolute before:left-0 before:top-1/2 before:h-5 before:w-0.5 before:-translate-y-1/2 before:rounded-r-full before:bg-brand"
                   : "text-stone-600 hover:bg-ink/5 hover:text-ink",
               )}
             >
@@ -154,7 +157,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                 className={cn(
                   "h-4 w-4",
                   active
-                    ? "text-white"
+                    ? "text-brand"
                     : "text-stone-400 group-hover:text-brand",
                 )}
               />
@@ -178,7 +181,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
           type="button"
           onClick={() => void handleLogout()}
           disabled={loggingOut}
-          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-semibold text-stone-600 transition hover:bg-rose-50 hover:text-rose-700 disabled:opacity-50"
+          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-semibold text-stone-600 transition hover:bg-rose-50 hover:text-rose-700 disabled:opacity-50 cursor-pointer"
         >
           <LogOut className="h-4 w-4" />
           {loggingOut ? "Signing out…" : "Sign out"}
@@ -201,7 +204,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
             onClick={() => setOpen(false)}
             aria-label="Close menu"
           />
-          <aside className="relative h-full w-[300px] max-w-[86vw] border-r border-line bg-surface-muted shadow-2xl">
+          <aside className="relative h-full w-75 max-w-[86vw] border-r border-line bg-surface-muted shadow-2xl">
             {sidebar}
           </aside>
         </div>

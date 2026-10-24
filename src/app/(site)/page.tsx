@@ -76,7 +76,7 @@ export default function LandingPage() {
               <Sparkles className="h-3.5 w-3.5" />
               Community-powered civic action
             </div>
-            <h1 className="mt-4 max-w-2xl text-[36px] font-semibold leading-[1.0] tracking-[-0.045em] text-ink xs:text-[44px] sm:text-6xl lg:text-[68px]">
+            <h1 className="mt-4 max-w-2xl text-[36px] font-semibold leading-none tracking-[-0.045em] text-ink xs:text-[44px] sm:text-6xl lg:text-[68px]">
               See it. Report it.{" "}
               <span className="relative whitespace-nowrap text-brand">
                 Fix it.
@@ -424,7 +424,7 @@ export default function LandingPage() {
       </section>
 
       <section className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="overflow-hidden rounded-[28px] bg-brand-solid px-6 py-10 text-white shadow-xl shadow-brand/20 sm:px-10 sm:py-12">
+        <div className="overflow-hidden rounded-[28px] bg-brand-solid px-6 py-10 text-white shadow-lg shadow-brand/20 sm:px-10 sm:py-12">
           <div className="grid gap-8 lg:grid-cols-[1.3fr_1fr] lg:items-center">
             <div>
               <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-white/70">

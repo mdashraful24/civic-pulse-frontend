@@ -13,8 +13,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { IssueCard } from "@/components/issues/issue-card";
 import { Button } from "@/components/ui/button";
+import { CustomSelect } from "@/components/ui/custom-select";
 import { EmptyState, Skeleton } from "@/components/ui/feedback";
-import { FormField, Input, Select } from "@/components/ui/field";
+import { FormField, Input } from "@/components/ui/field";
 import { api, getApiErrorMessage } from "@/lib/api";
 import {
   CATEGORY_OPTIONS,
@@ -181,9 +182,9 @@ export function IssueBrowser() {
         </div>
       </section>
 
-      <div className="mx-auto -mt-7 w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto -mt-10 w-full max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="relative z-10 rounded-2xl border border-line bg-surface p-4 shadow-lg shadow-black/5 sm:p-5">
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr_auto] lg:items-end">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[3fr_1fr_1fr_1fr_auto] lg:items-end">
             <FormField
               label="Search reports"
               className="sm:col-span-2 lg:col-span-1"
@@ -203,60 +204,46 @@ export function IssueBrowser() {
               </div>
             </FormField>
             <FormField label="Category">
-              <Select
+              <CustomSelect<IssueCategory>
                 value={category}
-                onChange={(event) => {
-                  setCategory(event.target.value as IssueCategory | "");
+                onChange={(value) => {
+                  setCategory(value);
                   setPage(1);
                 }}
-              >
-                <option value="">All categories</option>
-                {CATEGORY_OPTIONS.map((item) => (
-                  <option key={item.value} value={item.value}>
-                    {item.label}
-                  </option>
-                ))}
-              </Select>
+                placeholder="All categories"
+                options={CATEGORY_OPTIONS}
+              />
             </FormField>
             <FormField label="Status">
-              <Select
+              <CustomSelect<IssueStatus>
                 value={status}
-                onChange={(event) => {
-                  setStatus(event.target.value as IssueStatus | "");
+                onChange={(value) => {
+                  setStatus(value);
                   setPage(1);
                 }}
-              >
-                <option value="">Any status</option>
-                {STATUS_OPTIONS.map((item) => (
-                  <option key={item.value} value={item.value}>
-                    {item.label}
-                  </option>
-                ))}
-              </Select>
+                placeholder="Any status"
+                options={STATUS_OPTIONS}
+              />
             </FormField>
             <FormField label="Priority">
-              <Select
+              <CustomSelect<IssuePriority>
                 value={priority}
-                onChange={(event) => {
-                  setPriority(event.target.value as IssuePriority | "");
+                onChange={(value) => {
+                  setPriority(value);
                   setPage(1);
                 }}
-              >
-                <option value="">Any priority</option>
-                {PRIORITY_OPTIONS.map((item) => (
-                  <option key={item.value} value={item.value}>
-                    {item.label}
-                  </option>
-                ))}
-              </Select>
+                placeholder="Any priority"
+                options={PRIORITY_OPTIONS}
+              />
             </FormField>
             <Button
               variant="outline"
-              size="icon"
+              size="md"
               onClick={reset}
               disabled={!hasFilters}
               title="Reset filters"
               aria-label="Reset filters"
+              className="cursor-pointer"
             >
               <FilterX className="h-4 w-4" />
             </Button>
@@ -264,7 +251,7 @@ export function IssueBrowser() {
         </div>
       </div>
 
-      <section className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-12">
+      <section className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2 text-sm text-stone-500">
             <SlidersHorizontal className="h-4 w-4" />
@@ -280,18 +267,21 @@ export function IssueBrowser() {
             ) : null}
           </div>
           <FormField label="" className="w-full sm:w-auto">
-            <Select
-              aria-label="Sort reports"
+            <CustomSelect<"newest" | "oldest">
+              ariaLabel="Sort reports"
               value={sort}
-              onChange={(event) => {
-                setSort(event.target.value as "newest" | "oldest");
-                setPage(1);
+              onChange={(value) => {
+                if (value === "newest" || value === "oldest") {
+                  setSort(value);
+                  setPage(1);
+                }
               }}
               className="min-w-44"
-            >
-              <option value="newest">Newest first</option>
-              <option value="oldest">Oldest first</option>
-            </Select>
+              options={[
+                { value: "newest", label: "Newest first" },
+                { value: "oldest", label: "Oldest first" },
+              ]}
+            />
           </FormField>
         </div>
 

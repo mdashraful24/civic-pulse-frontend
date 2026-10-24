@@ -25,8 +25,9 @@ import {
 } from "@/components/issues/issue-badges";
 import { Avatar } from "@/components/ui/avatar";
 import { Button, buttonStyles } from "@/components/ui/button";
+import { CustomSelect } from "@/components/ui/custom-select";
 import { EmptyState, PageLoader, Skeleton } from "@/components/ui/feedback";
-import { FormField, Input, Select, Textarea } from "@/components/ui/field";
+import { FormField, Input, Textarea } from "@/components/ui/field";
 import { Modal } from "@/components/ui/modal";
 import { api, getApiErrorMessage } from "@/lib/api";
 import { STATUS_OPTIONS } from "@/lib/constants";
@@ -150,20 +151,15 @@ function AssignedIssuesContent() {
               </div>
             </FormField>
             <FormField label="Status">
-              <Select
+              <CustomSelect
                 value={status}
-                onChange={(event) => {
-                  setStatus(event.target.value as IssueStatus | "");
+                onChange={(value) => {
+                  setStatus(value as IssueStatus | "");
                   setPage(1);
                 }}
-              >
-                <option value="">Any status</option>
-                {STATUS_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </Select>
+                placeholder="Any status"
+                options={STATUS_OPTIONS}
+              />
             </FormField>
           </div>
         </div>
@@ -257,18 +253,10 @@ function AssignedIssuesContent() {
           title="Mark this issue as resolved?"
           description="Add a short note describing what was done. It will be visible on the public timeline."
           footer={
-            <>
-              <Button variant="ghost" onClick={() => setResolving(null)}>
-                Cancel
-              </Button>
-              <Button
-                loading={statusMutation.isPending}
-                onClick={submitResolve}
-              >
-                <CheckCircle2 className="h-4 w-4" />
-                Mark resolved
-              </Button>
-            </>
+            <Button loading={statusMutation.isPending} onClick={submitResolve}>
+              <CheckCircle2 className="h-4 w-4" />
+              Mark resolved
+            </Button>
           }
         >
           {resolving ? (

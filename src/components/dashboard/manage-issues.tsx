@@ -28,8 +28,9 @@ import {
 } from "@/components/issues/issue-badges";
 import { Avatar } from "@/components/ui/avatar";
 import { Button, buttonStyles } from "@/components/ui/button";
+import { CustomSelect } from "@/components/ui/custom-select";
 import { EmptyState, Skeleton } from "@/components/ui/feedback";
-import { FormField, Input, Select, Textarea } from "@/components/ui/field";
+import { FormField, Input, Textarea } from "@/components/ui/field";
 import { Modal } from "@/components/ui/modal";
 import { api, getApiErrorMessage } from "@/lib/api";
 import {
@@ -222,7 +223,7 @@ export function ManageIssues() {
         />
 
         <div className="mb-5 rounded-2xl border border-line bg-surface p-4 shadow-sm">
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr_auto] lg:items-end">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[3fr_1fr_1fr_1fr_auto] lg:items-end">
             <FormField
               label="Search issues"
               className="sm:col-span-2 lg:col-span-1"
@@ -242,56 +243,41 @@ export function ManageIssues() {
               </div>
             </FormField>
             <FormField label="Category">
-              <Select
+              <CustomSelect
                 value={category}
-                onChange={(event) => {
-                  setCategory(event.target.value as IssueCategory | "");
+                onChange={(value) => {
+                  setCategory(value as IssueCategory | "");
                   setPage(1);
                 }}
-              >
-                <option value="">All categories</option>
-                {CATEGORY_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </Select>
+                placeholder="All categories"
+                options={CATEGORY_OPTIONS}
+              />
             </FormField>
             <FormField label="Status">
-              <Select
+              <CustomSelect
                 value={status}
-                onChange={(event) => {
-                  setStatus(event.target.value as IssueStatus | "");
+                onChange={(value) => {
+                  setStatus(value as IssueStatus | "");
                   setPage(1);
                 }}
-              >
-                <option value="">Any status</option>
-                {STATUS_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </Select>
+                placeholder="Any status"
+                options={STATUS_OPTIONS}
+              />
             </FormField>
             <FormField label="Priority">
-              <Select
+              <CustomSelect
                 value={priority}
-                onChange={(event) => {
-                  setPriority(event.target.value as IssuePriority | "");
+                onChange={(value) => {
+                  setPriority(value as IssuePriority | "");
                   setPage(1);
                 }}
-              >
-                <option value="">Any priority</option>
-                {PRIORITY_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </Select>
+                placeholder="Any priority"
+                options={PRIORITY_OPTIONS}
+              />
             </FormField>
             <Button
               variant="outline"
-              size="icon"
+              size="md"
               disabled={!hasFilters}
               onClick={resetFilters}
               title="Reset filters"
@@ -339,7 +325,7 @@ export function ManageIssues() {
                   <tbody className="divide-y divide-line/70">
                     {issues.map((issue) => (
                       <tr key={issue.id} className="hover:bg-stone-50/50">
-                        <td className="max-w-[300px] px-5 py-3">
+                        <td className="max-w-75 px-5 py-3">
                           <div className="flex items-center gap-3">
                             <CategoryTile
                               category={issue.category}
@@ -487,25 +473,20 @@ export function ManageIssues() {
           onClose={closeDialog}
           title="Manage issue"
           description="Update assignment, priority and status. Every change is visible to the public."
-          size="lg"
+          size="md"
           footer={
-            <>
-              <Button variant="ghost" onClick={closeDialog}>
-                Cancel
-              </Button>
-              <Button
-                loading={saving}
-                onClick={() => {
-                  setSaving(true);
-                  saveMutation.mutate(undefined, {
-                    onSettled: () => setSaving(false),
-                  });
-                }}
-              >
-                <ShieldCheck className="h-4 w-4" />
-                Save changes
-              </Button>
-            </>
+            <Button
+              loading={saving}
+              onClick={() => {
+                setSaving(true);
+                saveMutation.mutate(undefined, {
+                  onSettled: () => setSaving(false),
+                });
+              }}
+            >
+              <ShieldCheck className="h-4 w-4" />
+              Save changes
+            </Button>
           }
         >
           {selected ? (
@@ -532,51 +513,38 @@ export function ManageIssues() {
                 </Link>
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-2">
-                <FormField label="Assign to personnel" htmlFor="assignee">
-                  <Select
-                    id="assignee"
+              <div className="grid gap-6 grid-cols-1">
+                <FormField label="Assign to personnel">
+                  <CustomSelect
                     value={assigneeId}
-                    onChange={(event) => setAssigneeId(event.target.value)}
-                  >
-                    <option value="">Unassigned</option>
-                    {personnel.map((person) => (
-                      <option key={person.id} value={person.id}>
-                        {person.name} · {person.email}
-                      </option>
-                    ))}
-                  </Select>
+                    onChange={(value) => setAssigneeId(value)}
+                    placeholder="Unassigned"
+                    options={personnel.map((person) => ({
+                      value: person.id,
+                      label: `${person.name} · ${person.email}`,
+                    }))}
+                  />
                 </FormField>
-                <FormField label="Priority" htmlFor="managePriority">
-                  <Select
-                    id="managePriority"
-                    value={nextPriority}
-                    onChange={(event) =>
-                      setNextPriority(event.target.value as IssuePriority)
-                    }
-                  >
-                    {PRIORITY_OPTIONS.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </Select>
-                </FormField>
-                <FormField label="Status" htmlFor="manageStatus">
-                  <Select
-                    id="manageStatus"
-                    value={nextStatus}
-                    onChange={(event) =>
-                      setNextStatus(event.target.value as IssueStatus)
-                    }
-                  >
-                    {STATUS_OPTIONS.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </Select>
-                </FormField>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField label="Priority">
+                    <CustomSelect<IssuePriority>
+                      value={nextPriority}
+                      onChange={(value) => {
+                        if (value) setNextPriority(value);
+                      }}
+                      options={PRIORITY_OPTIONS}
+                    />
+                  </FormField>
+                  <FormField label="Status">
+                    <CustomSelect<IssueStatus>
+                      value={nextStatus}
+                      onChange={(value) => {
+                        if (value) setNextStatus(value);
+                      }}
+                      options={STATUS_OPTIONS}
+                    />
+                  </FormField>
+                </div>
                 <FormField label="Public photo" htmlFor="managePhoto">
                   <div className="flex items-center gap-2">
                     <input
@@ -599,7 +567,7 @@ export function ManageIssues() {
                     />
                     <Button
                       variant="outline"
-                      size="sm"
+                      size="md"
                       onClick={() => fileInputRef.current?.click()}
                     >
                       <Camera className="h-3.5 w-3.5" />

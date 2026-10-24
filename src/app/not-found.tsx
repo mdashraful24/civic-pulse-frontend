@@ -16,7 +16,7 @@ export default function NotFound() {
         <Compass className="h-8 w-8" />
       </span>
 
-      <p className="mt-6 text-[11px] font-bold uppercase tracking-[0.18em] text-brand">
+      <p className="mt-6 font-bold uppercase tracking-[0.18em] text-brand">
         404 · Off the map
       </p>
       <h1 className="mt-2 text-3xl font-bold tracking-tight text-ink sm:text-4xl">

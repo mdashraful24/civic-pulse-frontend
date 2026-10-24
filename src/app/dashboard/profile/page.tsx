@@ -7,7 +7,6 @@ import {
   Eye,
   EyeOff,
   KeyRound,
-  LogOut,
   Mail,
   ShieldCheck,
   Trash2,
@@ -46,7 +45,7 @@ export default function ProfilePage() {
   const [removingPhoto, setRemovingPhoto] = useState(false);
   const [pendingPhoto, setPendingPhoto] = useState<File | null>(null);
   const [removePhotoOpen, setRemovePhotoOpen] = useState(false);
-  const [logoutPending, setLogoutPending] = useState(false);
+  const [logoutPending, _setLogoutPending] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPasswords, setShowPasswords] = useState(false);
@@ -155,7 +154,7 @@ export default function ProfilePage() {
   };
 
   const handleLogout = async () => {
-    setLogoutPending(true);
+    _setLogoutPending(true);
     await logout();
   };
 
@@ -413,22 +412,13 @@ export default function ProfilePage() {
         description="Your initials will be shown instead. You can upload a new photo at any time."
         size="sm"
         footer={
-          <>
-            <Button
-              variant="ghost"
-              onClick={() => setRemovePhotoOpen(false)}
-              disabled={removingPhoto}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="danger"
-              loading={removingPhoto}
-              onClick={() => void removePhoto()}
-            >
-              Remove photo
-            </Button>
-          </>
+          <Button
+            variant="danger"
+            loading={removingPhoto}
+            onClick={() => void removePhoto()}
+          >
+            Remove photo
+          </Button>
         }
       >
         <p className="text-sm leading-6 text-stone-600">

@@ -23,8 +23,9 @@ import { PageHeader } from "@/components/dashboard/page-header";
 import { RoleBadge, UserStatusBadge } from "@/components/issues/issue-badges";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { CustomSelect } from "@/components/ui/custom-select";
 import { EmptyState, Skeleton } from "@/components/ui/feedback";
-import { FormField, Input, Select } from "@/components/ui/field";
+import { FormField, Input } from "@/components/ui/field";
 import { Modal } from "@/components/ui/modal";
 import { PhotoPreviewDialog } from "@/components/ui/photo-preview-dialog";
 import { api, getApiErrorMessage } from "@/lib/api";
@@ -184,36 +185,26 @@ export default function AdminUsersPage() {
               </div>
             </FormField>
             <FormField label="Role">
-              <Select
+              <CustomSelect
                 value={role}
-                onChange={(event) => {
-                  setRole(event.target.value as Role | "");
+                onChange={(value) => {
+                  setRole(value as Role | "");
                   setPage(1);
                 }}
-              >
-                <option value="">Any role</option>
-                {ROLE_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </Select>
+                placeholder="Any role"
+                options={ROLE_OPTIONS}
+              />
             </FormField>
             <FormField label="Status">
-              <Select
+              <CustomSelect
                 value={status}
-                onChange={(event) => {
-                  setStatus(event.target.value as UserStatus | "");
+                onChange={(value) => {
+                  setStatus(value as UserStatus | "");
                   setPage(1);
                 }}
-              >
-                <option value="">Any status</option>
-                {USER_STATUS_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </Select>
+                placeholder="Any status"
+                options={USER_STATUS_OPTIONS}
+              />
             </FormField>
             <Button
               variant="outline"
@@ -466,20 +457,15 @@ export default function AdminUsersPage() {
           description="The person's initials will be shown instead. You can upload a new photo at any time."
           size="sm"
           footer={
-            <>
-              <Button variant="ghost" onClick={() => setRemoving(null)}>
-                Cancel
-              </Button>
-              <Button
-                variant="danger"
-                loading={removeMutation.isPending}
-                onClick={() => {
-                  if (removing) removeMutation.mutate(removing);
-                }}
-              >
-                Remove photo
-              </Button>
-            </>
+            <Button
+              variant="danger"
+              loading={removeMutation.isPending}
+              onClick={() => {
+                if (removing) removeMutation.mutate(removing);
+              }}
+            >
+              Remove photo
+            </Button>
           }
         >
           {removing ? (
