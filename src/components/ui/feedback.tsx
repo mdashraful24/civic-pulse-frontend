@@ -24,11 +24,11 @@ export function Skeleton({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-xl bg-stone-200/60",
+        "relative overflow-hidden rounded-xl bg-stone-200/70 dark:bg-white/5",
         className,
       )}
     >
-      <div className="skeleton-shimmer absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+      <div className="skeleton-shimmer absolute inset-0 bg-linear-to-r from-transparent via-black/5 to-transparent dark:via-white/10" />
     </div>
   );
 }

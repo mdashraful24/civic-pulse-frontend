@@ -60,6 +60,13 @@ export default function LoginPage() {
     if (!authLoading && user) router.replace("/dashboard");
   }, [authLoading, user, router]);
 
+  useEffect(() => {
+    setEmail("");
+    setPassword("");
+    setErrors({});
+    setFormError("");
+  }, []);
+
   const submit = async (
     credentials: { email: string; password: string },
     key: string,
@@ -95,7 +102,7 @@ export default function LoginPage() {
       title="Welcome back."
       description="Sign in to report an issue, track progress or manage your field work."
       footer={
-        <p className="text-center text-sm text-stone-500">
+        <p className="text-center text-sm">
           New to CivicPulse?{" "}
           <Link
             href="/register"
@@ -108,6 +115,7 @@ export default function LoginPage() {
     >
       <form
         className="grid gap-4"
+        autoComplete="off"
         onSubmit={(event) => {
           event.preventDefault();
           void submit({ email, password }, "form");
@@ -141,7 +149,7 @@ export default function LoginPage() {
             <Input
               id="password"
               type={showPassword ? "text" : "password"}
-              autoComplete="current-password"
+              autoComplete="off"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               placeholder="Your password"
@@ -187,15 +195,12 @@ export default function LoginPage() {
         <div className="mt-6">
           <div className="flex items-center gap-3">
             <span className="h-px flex-1 bg-line" />
-            <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-stone-400">
-              Demo accounts
+            <span className="text-[11px] font-semibold uppercase tracking-[0.14em]">
+              Quick logins
             </span>
             <span className="h-px flex-1 bg-line" />
           </div>
-          <p className="mt-2 text-center text-[11px] leading-5 text-stone-400">
-            One-click sign-in with the seeded demo accounts.
-          </p>
-          <div className="mt-3 grid grid-cols-3 gap-2">
+          <div className="mt-3 grid grid-cols-3 gap-4">
             {quickLogins.map((item) => (
               <Button
                 key={item.role}
@@ -212,7 +217,7 @@ export default function LoginPage() {
                     item.role,
                   )
                 }
-                className="flex-col gap-1.5 py-2.5"
+                className="flex items-center gap-1.5 cursor-pointer"
               >
                 {pending === item.role ? null : (
                   <item.icon className="h-4 w-4 text-brand" />
@@ -224,23 +229,23 @@ export default function LoginPage() {
         </div>
       ) : null}
 
-      <div className="mt-6 rounded-xl bg-stone-100/70 px-3.5 py-3">
+      {/* <div className="mt-6 rounded-xl bg-stone-100/70 px-3.5 py-3">
         <p className="text-[11px] leading-5 text-stone-500">
           Credentials are sent over a secure cookie session. CivicPulse does not
           use social login.
         </p>
-      </div>
+      </div> */}
 
-      <Link
+      {/* <Link
         href="/issues"
         className={buttonStyles({
           variant: "ghost",
           size: "sm",
-          className: "mt-3 w-full",
+          className: "mt-5 w-full",
         })}
       >
         Just browsing? Explore public issues
-      </Link>
+      </Link> */}
     </AuthShell>
   );
 }

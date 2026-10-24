@@ -29,6 +29,7 @@ import { CustomSelect } from "@/components/ui/custom-select";
 import { EmptyState, PageLoader, Skeleton } from "@/components/ui/feedback";
 import { FormField, Input, Textarea } from "@/components/ui/field";
 import { Modal } from "@/components/ui/modal";
+import { Pagination } from "@/components/ui/pagination";
 import { api, getApiErrorMessage } from "@/lib/api";
 import { STATUS_OPTIONS } from "@/lib/constants";
 import { formatDateTime, formatNumber, timeAgo } from "@/lib/format";
@@ -205,35 +206,17 @@ function AssignedIssuesContent() {
                 />
               ))}
             </div>
-            <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-              <p className="text-sm text-stone-500">
-                {formatNumber(meta?.total ?? 0)} assigned issue
-                {meta?.total === 1 ? "" : "s"}
-                {meta && meta.totalPages > 1
-                  ? ` · page ${meta.page} of ${meta.totalPages}`
-                  : ""}
-              </p>
-              {meta && meta.totalPages > 1 ? (
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={page <= 1}
-                    onClick={() => setPage((current) => current - 1)}
-                  >
-                    Previous
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={page >= meta.totalPages}
-                    onClick={() => setPage((current) => current + 1)}
-                  >
-                    Next
-                  </Button>
-                </div>
-              ) : null}
-            </div>
+            {meta ? (
+              <Pagination
+                page={meta.page}
+                totalPages={meta.totalPages}
+                total={meta.total}
+                variant="compact"
+                summaryLabel="assigned issue"
+                onPageChange={setPage}
+                className="mt-5"
+              />
+            ) : null}
           </>
         ) : (
           <EmptyState

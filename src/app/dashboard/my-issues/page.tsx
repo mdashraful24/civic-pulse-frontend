@@ -32,6 +32,7 @@ import { EmptyState, Skeleton } from "@/components/ui/feedback";
 import { FormField, Input } from "@/components/ui/field";
 import { Modal } from "@/components/ui/modal";
 import { PhotoPreviewDialog } from "@/components/ui/photo-preview-dialog";
+import { Pagination } from "@/components/ui/pagination";
 import { api, getApiErrorMessage } from "@/lib/api";
 import { IMAGE_ACCEPT, STATUS_OPTIONS } from "@/lib/constants";
 import { formatDate, formatNumber, timeAgo } from "@/lib/format";
@@ -207,35 +208,17 @@ export default function MyIssuesPage() {
               ))}
             </div>
 
-            <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-              <p className="text-sm text-stone-500">
-                {formatNumber(meta?.total ?? 0)} report
-                {meta?.total === 1 ? "" : "s"}
-                {meta && meta.totalPages > 1
-                  ? ` · page ${meta.page} of ${meta.totalPages}`
-                  : ""}
-              </p>
-              {meta && meta.totalPages > 1 ? (
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={page <= 1}
-                    onClick={() => setPage((current) => current - 1)}
-                  >
-                    Previous
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={page >= meta.totalPages}
-                    onClick={() => setPage((current) => current + 1)}
-                  >
-                    Next
-                  </Button>
-                </div>
-              ) : null}
-            </div>
+            {meta ? (
+              <Pagination
+                page={meta.page}
+                totalPages={meta.totalPages}
+                total={meta.total}
+                variant="compact"
+                summaryLabel="report"
+                onPageChange={setPage}
+                className="mt-5"
+              />
+            ) : null}
           </>
         ) : (
           <EmptyState

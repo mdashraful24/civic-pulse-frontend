@@ -2,8 +2,6 @@
 
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
-  ArrowLeft,
-  ArrowRight,
   FilterX,
   Inbox,
   Search,
@@ -16,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { CustomSelect } from "@/components/ui/custom-select";
 import { EmptyState, Skeleton } from "@/components/ui/feedback";
 import { FormField, Input } from "@/components/ui/field";
+import { Pagination } from "@/components/ui/pagination";
 import { api, getApiErrorMessage } from "@/lib/api";
 import {
   CATEGORY_OPTIONS,
@@ -148,12 +147,6 @@ export function IssueBrowser() {
     window.scrollTo({ top: 220, behavior: "smooth" });
   };
 
-  const pageNumbers = useMemo(() => {
-    const total = meta?.totalPages ?? 0;
-    if (total <= 1) return [] as number[];
-    const start = Math.max(1, Math.min(page - 1, total - 2));
-    return [start, start + 1, start + 2].filter((item) => item <= total);
-  }, [meta?.totalPages, page]);
 
   return (
     <main className="flex-1">
@@ -315,43 +308,13 @@ export function IssueBrowser() {
               ))}
             </div>
 
-            {meta && meta.totalPages > 1 ? (
-              <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-6">
-                <p className="text-sm text-stone-500">
-                  Page {meta.page} of {meta.totalPages}
-                </p>
-                <div className="flex flex-wrap items-center justify-center gap-1.5 sm:justify-end">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={page <= 1}
-                    onClick={() => changePage(page - 1)}
-                  >
-                    <ArrowLeft className="h-4 w-4" />
-                    Previous
-                  </Button>
-                  {pageNumbers.map((item) => (
-                    <Button
-                      key={item}
-                      variant={item === page ? "primary" : "outline"}
-                      size="sm"
-                      className="w-9 px-0"
-                      onClick={() => changePage(item)}
-                    >
-                      {item}
-                    </Button>
-                  ))}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={page >= meta.totalPages}
-                    onClick={() => changePage(page + 1)}
-                  >
-                    Next
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
+            {meta ? (
+              <Pagination
+                page={meta.page}
+                totalPages={meta.totalPages}
+                total={meta.total}
+                onPageChange={changePage}
+              />
             ) : null}
           </>
         ) : (

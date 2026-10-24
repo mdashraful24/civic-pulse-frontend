@@ -1,6 +1,22 @@
 import type { NextConfig } from "next";
 
+const apiUrl = (
+  process.env.API_PROXY_TARGET ??
+  process.env.NEXT_PUBLIC_API_URL ??
+  "http://localhost:5000/api"
+).replace(/\/+$/, "");
+
+const apiTarget = apiUrl.replace(/\/api$/, "");
+
 const nextConfig: NextConfig = {
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: `${apiTarget}/api/:path*`,
+      },
+    ];
+  },
   cacheComponents: true,
   partialPrefetching: true,
   reactCompiler: true,

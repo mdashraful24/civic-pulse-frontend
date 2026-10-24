@@ -85,16 +85,16 @@ export function AuthShell({
           </div>
         </div>
         <div className="flex flex-1 items-center justify-center px-5 pb-12 sm:px-8">
-          <div className="w-full max-w-[420px]">
+          <div className="w-full max-w-105">
             <h1 className="text-3xl font-semibold tracking-[-0.04em] text-ink">
               {title}
             </h1>
-            <p className="mt-2 text-sm leading-6 text-stone-500">
+            <p className="mt-2 text-sm leading-6">
               {description}
             </p>
             <div className="mt-7">{children}</div>
             {footer ? (
-              <div className="mt-6 border-t border-line pt-5">{footer}</div>
+              <div className="mt-6 border-t border-line pt-4">{footer}</div>
             ) : null}
           </div>
         </div>

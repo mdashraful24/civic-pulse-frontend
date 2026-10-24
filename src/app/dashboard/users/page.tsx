@@ -20,13 +20,15 @@ import { toast } from "sonner";
 import { useAuth } from "@/components/auth-provider";
 import { RoleGate } from "@/components/dashboard/auth-guard";
 import { PageHeader } from "@/components/dashboard/page-header";
-import { RoleBadge, UserStatusBadge } from "@/components/issues/issue-badges";
 import { Avatar } from "@/components/ui/avatar";
+import { RoleBadge, UserStatusBadge } from "@/components/issues/issue-badges";
 import { Button } from "@/components/ui/button";
 import { CustomSelect } from "@/components/ui/custom-select";
 import { EmptyState, Skeleton } from "@/components/ui/feedback";
 import { FormField, Input } from "@/components/ui/field";
 import { Modal } from "@/components/ui/modal";
+import { Pagination } from "@/components/ui/pagination";
+
 import { PhotoPreviewDialog } from "@/components/ui/photo-preview-dialog";
 import { api, getApiErrorMessage } from "@/lib/api";
 import {
@@ -396,34 +398,17 @@ export default function AdminUsersPage() {
               ))}
             </div>
 
-            <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-              <p className="text-sm text-stone-500">
-                {formatNumber(meta?.total ?? 0)} people
-                {meta && meta.totalPages > 1
-                  ? ` · page ${meta.page} of ${meta.totalPages}`
-                  : ""}
-              </p>
-              {meta && meta.totalPages > 1 ? (
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={page <= 1}
-                    onClick={() => setPage((current) => current - 1)}
-                  >
-                    Previous
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={page >= meta.totalPages}
-                    onClick={() => setPage((current) => current + 1)}
-                  >
-                    Next
-                  </Button>
-                </div>
-              ) : null}
-            </div>
+            {meta ? (
+              <Pagination
+                page={meta.page}
+                totalPages={meta.totalPages}
+                total={meta.total}
+                variant="compact"
+                summaryLabel="user"
+                onPageChange={setPage}
+                className="mt-5"
+              />
+            ) : null}
           </>
         ) : (
           <EmptyState
