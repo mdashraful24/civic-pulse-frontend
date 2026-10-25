@@ -1,150 +1,204 @@
-# CivicPulse frontend
+# CivicPulse
 
-Next.js 16 frontend for **CivicPulse**, a community issue reporting and management platform. Residents can browse public reports and file new ones; administrators triage, assign, prioritise and update issues; field personnel manage the work assigned to them.
+CivicPulse is a community issue reporting and management platform. Residents can report local problems, browse public reports, and follow each issue from submission through resolution. Administrators and field personnel have role-specific workspaces for triage, assignment, progress updates, and user management.
 
-The UI talks to the separate CivicPulse backend API (default `http://localhost:5000/api`). This project uses the Next.js App Router, React 19, Tailwind CSS 4, TanStack Query, Zod and Sonner.
+## Features
 
-## Getting started
+### Public experience
 
-### 1. Start the backend
+- Browse a searchable, filterable public issue list
+- Filter reports by category, priority, and status
+- Sort and paginate issue results
+- Open an issue detail page with its description, location, image, people involved, and status history
+- View responsive layouts with light and dark themes
 
-The API, database migrations, seeded demo accounts, Redis and Cloudinary configuration live in the backend project. Follow its README to:
+### Citizen workspace
 
-- configure `.env` (Postgres/Neon, Redis, Cloudinary, email)
-- run `bun install`
-- run the Prisma migration and seed manually against your database
-- start it on `http://localhost:5000`
+- Register with email verification and OTP confirmation
+- Sign in and maintain a protected session
+- Report an issue with a title, description, category, location, priority, and optional image
+- View and manage personally reported issues
+- Track pending, in-progress, and resolved reports
+- Manage profile and account security settings
 
-The API must be reachable before the frontend can load data or sign in.
+### Administrator workspace
 
-### 2. Configure this app
+- View issue statistics and recent activity
+- Manage all reported issues
+- Assign issues to personnel
+- Update issue status and add resolution notes
+- Search and manage platform users
 
-```bash
-bun install
-cp .env.example .env.local
-```
+### Personnel workspace
 
-On PowerShell use `Copy-Item .env.example .env.local`. Then confirm:
+- View issues assigned to the current field worker
+- Update assigned issue progress and resolution details
+- Access profile and account security settings
 
-```env
-NEXT_PUBLIC_API_URL=http://localhost:5000/api
-```
+## Roles and permissions
 
-The `/api` prefix is required because the backend mounts every route under `/api`.
+| Capability | Citizen | Admin | Personnel |
+| --- | --- | --- | --- |
+| Browse public issues | Yes | Yes | Yes |
+| Report an issue | Yes | No | No |
+| Manage own issues | Yes | No | No |
+| Manage all issues | No | Yes | No |
+| Assign issues | No | Yes | No |
+| Manage users | No | Yes | No |
+| Update assigned issues | No | No | Yes |
+| Manage profile and security | Yes | Yes | Yes |
 
-Quick-login buttons on `/login` are optional. They are hidden for any role whose email and password are not set in `.env.local`.
+## Issue workflow
 
-### 3. Run it
+1. A citizen submits a report, which starts in `Pending`.
+2. An administrator reviews the report and may assign it to personnel.
+3. Personnel update the report to `In progress` while work is underway.
+4. The issue is marked `Resolved` with an optional resolution note.
 
-```bash
-bun dev
-```
+Supported categories:
 
-Open [http://localhost:3000](http://localhost:3000).
+- Roads and potholes
+- Streetlights
+- Water and drainage
+- Waste and sanitation
+- Other
 
-Production check:
+Supported priorities are `Low`, `Medium`, and `High`.
 
-```bash
-bun run build
-bun start
+## Technology
+
+- Next.js 16 App Router
+- React 19
+- TypeScript
+- Tailwind CSS 4
+- TanStack React Query
+- Zod validation
+- Lucide React icons
+- `next-themes` for theme switching
+- Sonner for notifications
+- Biome for linting and formatting
+
+## Project structure
+
+```text
+src/
+├── app/
+│   ├── (auth)/                 Authentication pages
+│   ├── (site)/                 Public landing page and issue browser
+│   └── dashboard/              Protected role-based workspace
+├── components/
+│   ├── auth/                   Authentication UI
+│   ├── dashboard/              Dashboard shell and management views
+│   ├── issues/                 Issue forms, cards, browser, and details
+│   └── ui/                     Shared interface components
+└── lib/
+    ├── api.ts                  API client and session refresh handling
+    ├── constants.ts            Categories, roles, statuses, and labels
+    ├── types.ts                Domain and API types
+    └── validation.ts           Form validation schemas
 ```
 
 ## Routes
 
-| Route | Access | Purpose |
-| --- | --- | --- |
-| `/` | Public | Landing page with live totals and recent reports |
-| `/issues` | Public | Browse, search, filter by category/priority/status, sort and paginate |
-| `/issues/[id]` | Public | Full report, photo, resolution note and public status timeline |
-| `/login` | Public | Email/password sign in, plus optional demo quick-login buttons |
-| `/register` | Public | Account details and optional profile photo; starts OTP verification |
-| `/verify-email` | Public | Six-digit OTP entry and resend with countdown |
-| `/dashboard` | Signed in | Role-aware overview and recent activity |
-| `/dashboard/report` | Citizen | Create a report with an optional photo |
-| `/dashboard/my-issues` | Citizen | Search own reports, edit/delete pending reports, replace photos |
-| `/dashboard/manage` | Admin | Triage all reports, assign personnel, change priority/status, replace photos |
-| `/dashboard/users` | Admin | Search the people directory and replace/remove profile photos |
-| `/dashboard/assigned` | Personnel | Start assigned work and resolve it with a note |
-| `/dashboard/profile` | Signed in | Profile photo, account details, password change and sign out |
+### Public routes
 
-`/dashboard/manage?issue=<id>` opens the manage dialog directly for an issue. The **Manage** button on a public issue page uses this deep link for administrators.
-
-## Roles
-
-- **Citizen** — reports issues, edits/deletes them while pending, manages their photo and profile.
-- **Personnel** — sees issues assigned to them, moves `PENDING` to `IN_PROGRESS`, then resolves with an optional note.
-- **Admin** — manages all issues, assignment, priority, status and public issue photos, and administers user profile photos.
-
-The backend is the authority on permissions. The frontend hides or gates unavailable actions with `RoleGate`, but every request is still protected server-side.
-
-## Authentication
-
-CivicPulse uses credential-based auth only. There is no OAuth or social sign-in.
-
-- The backend sets access and refresh tokens in `httpOnly` cookies.
-- Every API request uses `credentials: "include"`; tokens are never read from or stored in browser storage.
-- A `401` response triggers one refresh attempt, then the original request is retried.
-- If refresh fails, the session is treated as signed out.
-- Changing a password revokes existing sessions; the app clears the local user and returns to `/login`.
-
-The frontend allows cross-origin cookies to the configured API URL. In local development the backend should allow the frontend origin (`http://localhost:3000`) and use `COOKIE_SECURE=false` with `COOKIE_SAME_SITE=lax` over HTTP.
-
-## Validation
-
-Client-side validation mirrors the backend Zod schemas. When either side changes, update both. The backend additionally rejects changing to the current password.
-
-| Field | Rule |
-| --- | --- |
-| Name | 2–80 characters |
-| Email | Valid address, max 254 characters, normalised to lowercase |
-| Password | 8–128 characters, at least one letter and one number, max 72 bytes |
-| OTP | Exactly 6 digits |
-| Issue title | 3–150 characters |
-| Issue description | 10–5000 characters |
-| Issue location | 3–200 characters |
-| Resolution note | Max 2000 characters |
-| Issue search | Max 120 characters |
-| Upload | JPEG, PNG, WebP or GIF; max 5 MB; one file |
-
-## Images
-
-Images are uploaded as multipart `form-data` in an `image` field and stored by Cloudinary through the backend. Supported flows:
-
-- optional profile photo during registration
-- issue photo on creation and while the report is still pending
-- profile photo from `/dashboard/profile`
-- issue photo replacement from admin issue management
-- profile photo replacement/removal from the admin people directory
-
-`next.config.ts` allows remote images from Cloudinary (`res.cloudinary.com`). Add any other image host there if the backend starts returning one.
-
-## Demo accounts
-
-The backend seed creates these accounts:
-
-| Role | Email | Password |
-| --- | --- | --- |
-| Admin | `admin@civicpulse.local` | `Admin@12345` |
-| Personnel | `personnel@civicpulse.local` | `Personnel@12345` |
-| Citizen | `citizen@civicpulse.local` | `Citizen@12345` |
-
-The same values are used by the optional quick-login buttons. Never use demo credentials in production.
-
-## Scripts
-
-```bash
-bun dev          # start the development server
-bun run build    # production build
-bun start        # serve the production build
-bun run lint     # Biome checks
-bun run format   # Biome formatting
-bunx tsc --noEmit  # type check
+```text
+/
+/issues
+/issues/[id]
+/login
+/register
+/verify-email
 ```
 
-## Troubleshooting
+### Protected routes
 
-- **Every request fails** — confirm the backend is running and `NEXT_PUBLIC_API_URL` ends in `/api`.
-- **CORS or cookie errors** — make sure the backend allows `http://localhost:3000`, and use the same host (`localhost`, not `127.0.0.1`) for both apps.
-- **Images fail to render** — confirm the URL host is allowed in `next.config.ts`.
-- **Login says the email is unverified** — complete `/verify-email` with the six-digit code, or resend it.
-- **Database or OTP errors** — the backend migration, seed or Redis connection is incomplete; check the backend README and logs.
+```text
+/dashboard
+/dashboard/report
+/dashboard/my-issues
+/dashboard/manage
+/dashboard/assigned
+/dashboard/users
+/dashboard/profile
+```
+
+Access to dashboard routes is guarded by authentication and role-aware navigation. The API client uses credentialed requests and attempts a session refresh after an authenticated request receives a `401` response.
+
+## Getting started
+
+### Prerequisites
+
+- Node.js 20 or later
+- Bun 1.4 or later, or a compatible npm/pnpm setup
+- The CivicPulse backend API running locally or available remotely
+
+### Install dependencies
+
+```bash
+bun install
+```
+
+### Configure the API
+
+The frontend calls the same-origin `/api` path:
+
+```ts
+export const API_URL = "/api";
+```
+
+Configure the Next.js rewrite or proxy for `/api` in `next.config.ts` according to the backend environment. Do not commit credentials or private environment files.
+
+### Run the development server
+
+```bash
+bun run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000).
+
+### Build for production
+
+```bash
+bun run build
+bun run start
+```
+
+### Check code quality
+
+```bash
+bun run lint
+```
+
+To format the project with Biome:
+
+```bash
+bun run format
+```
+
+## API integration
+
+The frontend expects a REST API behind the `/api` path. The client handles:
+
+- Registration, login, email verification, OTP resend, logout, and token refresh
+- Current-user information and profile updates
+- Paginated issue listing and issue details
+- Issue creation, editing, assignment, and status changes
+- Issue history and statistics
+- Administrative user listing and management
+
+Responses use the typed API envelope defined in [`src/lib/types.ts`](./src/lib/types.ts). Request and response behavior is centralized in [`src/lib/api.ts`](./src/lib/api.ts).
+
+## Design and accessibility
+
+CivicPulse uses a responsive, mobile-first interface with:
+
+- Shared buttons, fields, badges, modals, pagination, feedback, and loading states
+- Keyboard-visible focus treatment
+- Reduced-motion support
+- Responsive navigation for public and dashboard layouts
+- Light and dark color themes
+
+## License
+
+This project is intended for educational and portfolio use.
