@@ -2,6 +2,15 @@
 
 CivicPulse is a community issue reporting and management platform. Residents can report local problems, browse public reports, and follow each issue from submission through resolution. Administrators and field personnel have role-specific workspaces for triage, assignment, progress updates, and user management.
 
+<div align="center">
+  <img height="500" src="https://drive.google.com/uc?export=view&id=1wCo39bsTqoxGc3nSJwBaiNzTTycOVAm4" alt="CivicPulse" />
+</div>
+
+## Deployment
+
+- [Live frontend](https://civic-pulse-frontend-flame.vercel.app/)
+- [Backend API](https://civic-pulse-backend-eta.vercel.app/)
+
 ## Features
 
 ### Public experience

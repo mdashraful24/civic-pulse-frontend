@@ -2,6 +2,8 @@ import Link from "next/link";
 import { Logo } from "@/components/brand/logo";
 
 export function SiteFooter() {
+  const currentYear = new Date().getFullYear();
+
   return (
     <footer className="border-t border-line bg-surface-muted">
       <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr] lg:px-8">
@@ -59,7 +61,7 @@ export function SiteFooter() {
       </div>
       <div className="border-t border-line/70">
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-2 px-4 py-5 text-xs text-stone-500 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
-          <p>© CivicPulse. Built for better neighbourhoods.</p>
+          <p>&copy; {currentYear} CivicPulse. Built for better neighbourhoods.</p>
           <p>Report responsibly. Resolve together.</p>
         </div>
       </div>
