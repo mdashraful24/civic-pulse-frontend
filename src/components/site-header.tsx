@@ -13,10 +13,23 @@ import { roleLabels } from "@/lib/constants";
 import { cn } from "@/lib/format";
 
 const links = [
+  { href: "/", label: "Home" },
   { href: "/issues", label: "Browse issues" },
   { href: "/#how-it-works", label: "How it works" },
   { href: "/#categories", label: "Categories" },
 ];
+
+function isLinkActive(href: string, current: string) {
+  if (href.startsWith("/#")) {
+    return (
+      current === "" &&
+      typeof window !== "undefined" &&
+      window.location.hash === href.slice(1)
+    );
+  }
+  if (href === "") return current === "";
+  return current === href || current.startsWith(`${href}/`);
+}
 
 export function SiteHeader() {
   const { user, loading } = useAuth();
@@ -32,11 +45,7 @@ export function SiteHeader() {
         <nav className="hidden items-center gap-1 md:flex">
           {links.map((link) => {
             const href = link.href.replace(/\/$/, "");
-            const active = href.startsWith("/#")
-              ? current === "/" && typeof window !== "undefined"
-                ? window.location.hash === href.slice(1)
-                : false
-              : current === href || current.startsWith(`${href}/`);
+            const active = isLinkActive(href, current);
             return (
               <Link
                 key={link.href}
@@ -108,11 +117,7 @@ export function SiteHeader() {
           <nav className="grid gap-1">
             {links.map((link) => {
               const href = link.href.replace(/\/$/, "");
-              const active = href.startsWith("/#")
-                ? current === "/" && typeof window !== "undefined"
-                  ? window.location.hash === href.slice(1)
-                  : false
-                : current === href || current.startsWith(`${href}/`);
+              const active = isLinkActive(href, current);
               return (
                 <Link
                   key={link.href}
