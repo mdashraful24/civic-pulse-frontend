@@ -1,4 +1,4 @@
-# CivicPulse
+# CivicPulse — Frontend
 
 CivicPulse is a community issue reporting and management platform. Residents can report local problems, browse public reports, and follow each issue from submission through resolution. Administrators and field personnel have role-specific workspaces for triage, assignment, progress updates, and user management.
 
@@ -6,10 +6,76 @@ CivicPulse is a community issue reporting and management platform. Residents can
   <img height="500" src="https://drive.google.com/uc?export=view&id=1wCo39bsTqoxGc3nSJwBaiNzTTycOVAm4" alt="CivicPulse" />
 </div>
 
-## Deployment
+<p align="center">
+  <a href="https://civic-pulse-frontend-flame.vercel.app/"><strong>Live Demo</strong></a> ·
+  <a href="https://github.com/mdashraful24/civic-pulse-frontend"><strong>Frontend Repository</strong></a> ·
+  <a href="https://github.com/mdashraful24/civic-pulse-backend"><strong>Backend Repository</strong></a> ·
+  <a href="https://civic-pulse-backend-eta.vercel.app/"><strong>Backend API</strong></a>
+</p>
 
-- [Live frontend](https://civic-pulse-frontend-flame.vercel.app/)
-- [Backend API](https://civic-pulse-backend-eta.vercel.app/)
+---
+
+## Live links
+
+| Resource | URL |
+| --- | --- |
+| Live application | https://civic-pulse-frontend-flame.vercel.app/ |
+| Public issue browser | https://civic-pulse-frontend-flame.vercel.app/issues |
+| Login page (quick logins) | https://civic-pulse-frontend-flame.vercel.app/login |
+| Backend API | https://civic-pulse-backend-eta.vercel.app/ |
+| Backend health check | https://civic-pulse-backend-eta.vercel.app/health |
+| Frontend repository | https://github.com/mdashraful24/civic-pulse-frontend |
+| Backend repository | https://github.com/mdashraful24/civic-pulse-backend |
+| Postman collection | [CivicPulse.postman_collection.json](https://github.com/mdashraful24/civic-pulse-backend/blob/main/postman/CivicPulse.postman_collection.json) |
+
+## Demo accounts
+
+The demo accounts are created by the backend seed script. All three share the same quick-login buttons on the [login page](https://civic-pulse-frontend-flame.vercel.app/login).
+
+| Role | Name | Email | Password | Default workspace |
+| --- | --- | --- | --- | --- |
+| Admin | CivicPulse Admin | `admin@civicpulse.local` | `Admin@12345` | `/dashboard/manage`, `/dashboard/users` |
+| Personnel | CivicPulse Personnel | `personnel@civicpulse.local` | `Personnel@12345` | `/dashboard/assigned` |
+| Citizen | CivicPulse Citizen | `citizen@civicpulse.local` | `Citizen@12345` | `/dashboard/report`, `/dashboard/my-issues` |
+
+> These credentials are for the seeded demo environment only. Change the `SEED_*` variables and set `SEED_ON_START=false` for any non-local or production deployment.
+
+### Quick login
+
+The login page can render one-click role buttons when the following environment variables are set:
+
+```dotenv
+NEXT_PUBLIC_QUICK_LOGIN_CITIZEN_EMAIL="citizen@civicpulse.local"
+NEXT_PUBLIC_QUICK_LOGIN_CITIZEN_PASSWORD="Citizen@12345"
+
+NEXT_PUBLIC_QUICK_LOGIN_PERSONNEL_EMAIL="personnel@civicpulse.local"
+NEXT_PUBLIC_QUICK_LOGIN_PERSONNEL_PASSWORD="Personnel@12345"
+
+NEXT_PUBLIC_QUICK_LOGIN_ADMIN_EMAIL="admin@civicpulse.local"
+NEXT_PUBLIC_QUICK_LOGIN_ADMIN_PASSWORD="Admin@12345"
+```
+
+Leave any email/password pair blank to hide that role's quick-login button.
+
+---
+
+## Table of contents
+
+- [Features](#features)
+- [Roles and permissions](#roles-and-permissions)
+- [Issue workflow](#issue-workflow)
+- [Technology](#technology)
+- [Project structure](#project-structure)
+- [Routes](#routes)
+- [Getting started](#getting-started)
+- [Environment variables](#environment-variables)
+- [API integration](#api-integration)
+- [Design and accessibility](#design-and-accessibility)
+- [Deployment](#deployment)
+- [Contributing](#contributing)
+- [License](#license)
+
+---
 
 ## Features
 
@@ -19,7 +85,8 @@ CivicPulse is a community issue reporting and management platform. Residents can
 - Filter reports by category, priority, and status
 - Sort and paginate issue results
 - Open an issue detail page with its description, location, image, people involved, and status history
-- View responsive layouts with light and dark themes
+- Read the Terms & Conditions, Privacy Policy, and Security pages
+- Responsive layouts with light and dark themes
 
 ### Citizen workspace
 
@@ -66,26 +133,28 @@ CivicPulse is a community issue reporting and management platform. Residents can
 
 Supported categories:
 
-- Roads and potholes
-- Streetlights
-- Water and drainage
-- Waste and sanitation
-- Other
+- Roads and potholes (`ROADS`)
+- Streetlights (`STREETLIGHTS`)
+- Water and drainage (`WATER`)
+- Waste and sanitation (`WASTE`)
+- Other (`OTHER`)
 
 Supported priorities are `Low`, `Medium`, and `High`.
 
 ## Technology
 
-- Next.js 16 App Router
-- React 19
-- TypeScript
-- Tailwind CSS 4
-- TanStack React Query
-- Zod validation
-- Lucide React icons
-- `next-themes` for theme switching
-- Sonner for notifications
-- Biome for linting and formatting
+| Area | Choice |
+| --- | --- |
+| Framework | [Next.js 16](https://nextjs.org) App Router |
+| UI runtime | React 19 |
+| Language | TypeScript |
+| Styling | Tailwind CSS 4 |
+| Data fetching | TanStack React Query |
+| Validation | Zod |
+| Icons | Lucide React |
+| Theming | `next-themes` |
+| Notifications | Sonner |
+| Tooling | Biome (lint + format), Bun |
 
 ## Project structure
 
@@ -93,12 +162,13 @@ Supported priorities are `Low`, `Medium`, and `High`.
 src/
 ├── app/
 │   ├── (auth)/                 Authentication pages
-│   ├── (site)/                 Public landing page and issue browser
+│   ├── (site)/                 Public landing page, issue browser, and legal pages
 │   └── dashboard/              Protected role-based workspace
 ├── components/
 │   ├── auth/                   Authentication UI
 │   ├── dashboard/              Dashboard shell and management views
 │   ├── issues/                 Issue forms, cards, browser, and details
+│   ├── legal/                  Legal page layout
 │   └── ui/                     Shared interface components
 └── lib/
     ├── api.ts                  API client and session refresh handling
@@ -118,6 +188,9 @@ src/
 /login
 /register
 /verify-email
+/terms
+/privacy
+/security
 ```
 
 ### Protected routes
@@ -139,8 +212,9 @@ Access to dashboard routes is guarded by authentication and role-aware navigatio
 ### Prerequisites
 
 - Node.js 20 or later
-- Bun 1.4 or later, or a compatible npm/pnpm setup
-- The CivicPulse backend API running locally or available remotely
+- Bun 1.4 or later (or a compatible npm/pnpm setup)
+- The [CivicPulse backend](https://github.com/mdashraful24/civic-pulse-backend) running locally or available remotely
+- Redis and PostgreSQL are required by the backend, not by the frontend
 
 ### Install dependencies
 
@@ -148,15 +222,19 @@ Access to dashboard routes is guarded by authentication and role-aware navigatio
 bun install
 ```
 
-### Configure the API
+### Configure the environment
 
-The frontend calls the same-origin `/api` path:
-
-```ts
-export const API_URL = "/api";
+```bash
+cp .env.example .env.local
 ```
 
-Configure the Next.js rewrite or proxy for `/api` in `next.config.ts` according to the backend environment. Do not commit credentials or private environment files.
+Set `API_PROXY_TARGET` to the backend API root (including the `/api` prefix):
+
+```dotenv
+API_PROXY_TARGET="http://localhost:5000/api"
+```
+
+The browser only calls the same-origin `/api` path; Next.js rewrites it to the backend through `next.config.ts`. Never commit real `.env` files or credentials.
 
 ### Run the development server
 
@@ -185,6 +263,16 @@ To format the project with Biome:
 bun run format
 ```
 
+## Environment variables
+
+| Variable | Required | Description |
+| --- | --- | --- |
+| `API_PROXY_TARGET` | Yes (local/prod) | Backend API root used by the `/api` rewrite, e.g. `http://localhost:5000/api` |
+| `NEXT_PUBLIC_API_URL` | Fallback | Used if `API_PROXY_TARGET` is not set |
+| `NEXT_PUBLIC_QUICK_LOGIN_CITIZEN_EMAIL` / `_PASSWORD` | Optional | Show the Citizen quick-login button |
+| `NEXT_PUBLIC_QUICK_LOGIN_PERSONNEL_EMAIL` / `_PASSWORD` | Optional | Show the Personnel quick-login button |
+| `NEXT_PUBLIC_QUICK_LOGIN_ADMIN_EMAIL` / `_PASSWORD` | Optional | Show the Admin quick-login button |
+
 ## API integration
 
 The frontend expects a REST API behind the `/api` path. The client handles:
@@ -198,6 +286,8 @@ The frontend expects a REST API behind the `/api` path. The client handles:
 
 Responses use the typed API envelope defined in [`src/lib/types.ts`](./src/lib/types.ts). Request and response behavior is centralized in [`src/lib/api.ts`](./src/lib/api.ts).
 
+For endpoint details, authentication cookies, and request examples, see the [backend API reference](https://github.com/mdashraful24/civic-pulse-backend#api-reference).
+
 ## Design and accessibility
 
 CivicPulse uses a responsive, mobile-first interface with:
@@ -207,6 +297,23 @@ CivicPulse uses a responsive, mobile-first interface with:
 - Reduced-motion support
 - Responsive navigation for public and dashboard layouts
 - Light and dark color themes
+
+## Deployment
+
+The frontend is deployed on Vercel. To deploy your own instance:
+
+1. Import the repository into Vercel with the project root set to `civic-pulse-frontend`.
+2. Add `API_PROXY_TARGET` pointing at the deployed backend, e.g. `https://civic-pulse-backend-eta.vercel.app/api`.
+3. Add the optional `NEXT_PUBLIC_QUICK_LOGIN_*` variables if you want demo quick-login buttons.
+4. Deploy.
+
+The backend must allow the deployed frontend origin through `FRONTEND_URL` and use cross-site cookie settings (`COOKIE_SECURE=true`, `COOKIE_SAME_SITE=none`) when frontend and API are on different domains.
+
+## Contributing
+
+1. Fork the repository and create a feature branch.
+2. Follow the existing code style and run `bun run lint` before committing.
+3. Open a pull request describing the change and its motivation.
 
 ## License
 
