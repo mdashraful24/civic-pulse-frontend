@@ -3,7 +3,7 @@
 import { LayoutDashboard, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/components/auth-provider";
 import { Logo } from "@/components/brand/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -35,14 +35,50 @@ export function SiteHeader() {
   const { user, loading } = useAuth();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
   const current = pathname?.replace(/\/$/, "") || "";
 
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handlePointer = (event: MouseEvent | TouchEvent) => {
+      if (!headerRef.current?.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) setOpen(false);
+    };
+
+    document.addEventListener("mousedown", handlePointer);
+    document.addEventListener("touchstart", handlePointer);
+    document.addEventListener("keydown", handleKey);
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      document.removeEventListener("mousedown", handlePointer);
+      document.removeEventListener("touchstart", handlePointer);
+      document.removeEventListener("keydown", handleKey);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [open]);
+
   return (
-    <header className="sticky top-0 z-40 border-b border-line/80 bg-paper/95 backdrop-blur-md">
-      <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+    <header
+      ref={headerRef}
+      className="sticky top-0 z-40 border-b border-line/80 bg-paper/95 backdrop-blur-md"
+    >
+      <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between gap-3 sm:gap-4 pl-4 sm:pl-6 lg:pl-8 lg:pr-3">
         <Logo />
 
-        <nav className="hidden items-center gap-1 md:flex">
+        <nav className="hidden items-center gap-0.5 lg:flex">
           {links.map((link) => {
             const href = link.href.replace(/\/$/, "");
             const active = isLinkActive(href, current);
@@ -63,7 +99,7 @@ export function SiteHeader() {
           })}
         </nav>
 
-        <div className="hidden items-center gap-2 md:flex">
+        <div className="hidden items-center gap-2 lg:flex">
           {loading ? (
             <div className="h-10 w-36 animate-pulse rounded-xl bg-stone-200/70" />
           ) : user ? (
@@ -99,13 +135,15 @@ export function SiteHeader() {
           <ThemeToggle />
         </div>
 
-        <div className="flex items-center gap-2 md:hidden">
+        <div className="flex items-center gap-2 lg:hidden">
           <ThemeToggle />
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setOpen((current) => !current)}
-            aria-label="Toggle navigation"
+            aria-label={open ? "Close navigation" : "Open navigation"}
+            aria-expanded={open}
+            aria-controls="site-mobile-nav"
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
@@ -113,7 +151,10 @@ export function SiteHeader() {
       </div>
 
       {open ? (
-        <div className="border-t border-line bg-paper px-4 py-4 md:hidden">
+        <div
+          id="site-mobile-nav"
+          className="max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-line bg-paper px-4 pb-5 pt-3 shadow-lg shadow-black/5 sm:px-6 lg:hidden"
+        >
           <nav className="grid gap-1">
             {links.map((link) => {
               const href = link.href.replace(/\/$/, "");
@@ -136,7 +177,12 @@ export function SiteHeader() {
             })}
           </nav>
           <div className="mt-3 grid gap-2 border-t border-line pt-3">
-            {user ? (
+            {loading ? (
+              <div className="grid gap-2">
+                <div className="h-11 animate-pulse rounded-xl bg-stone-200/70" />
+                <div className="h-10 animate-pulse rounded-xl bg-stone-200/70" />
+              </div>
+            ) : user ? (
               <>
                 <Link
                   href="/dashboard"
@@ -148,10 +194,20 @@ export function SiteHeader() {
                 <Link
                   href="/dashboard/profile"
                   onClick={() => setOpen(false)}
-                  className="flex items-center gap-2 rounded-xl px-1 py-2"
+                  className="flex min-w-0 items-center gap-2 rounded-xl px-1 py-2 transition hover:bg-ink/5"
                 >
-                  <Avatar name={user.name} src={user.imageUrl} size="sm" />
-                  <span className="text-sm font-semibold">{user.name}</span>
+                  <Avatar
+                    name={user.name}
+                    src={user.imageUrl}
+                    size="sm"
+                    className="shrink-0"
+                  />
+                  <span className="min-w-0 flex-1 truncate text-sm font-semibold">
+                    {user.name}
+                  </span>
+                  <span className="shrink-0 text-xs text-stone-500">
+                    {roleLabels[user.role]}
+                  </span>
                 </Link>
               </>
             ) : (

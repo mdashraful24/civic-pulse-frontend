@@ -394,7 +394,7 @@ export default function LandingPage() {
             {recent.isLoading ? (
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {[0, 1, 2].map((item) => (
-                  <Skeleton key={item} className="h-[360px] rounded-2xl" />
+                  <Skeleton key={item} className="h-90 rounded-2xl" />
                 ))}
               </div>
             ) : recentIssues.length > 0 ? (

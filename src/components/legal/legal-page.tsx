@@ -14,7 +14,7 @@ export function LegalPage({
   return (
     <main className="flex-1">
       <section className="border-b border-line bg-surface-muted">
-        <div className="mx-auto w-full max-w-5xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+        <div className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
           <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-brand">
             Legal
           </p>
@@ -30,7 +30,7 @@ export function LegalPage({
         </div>
       </section>
 
-      <div className="mx-auto w-full max-w-5xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+      <div className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
         <div className="grid gap-10 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-16">
           <aside className="lg:sticky lg:top-24 lg:self-start">
             <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-stone-500">
