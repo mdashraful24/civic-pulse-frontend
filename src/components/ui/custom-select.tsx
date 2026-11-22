@@ -3,6 +3,7 @@
 import { Check, ChevronDown } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/format";
+import { mergeAriaDescribedBy, useFieldControl } from "./field";
 
 const controlClasses =
   "w-full rounded-xl border border-line bg-surface text-base text-ink shadow-sm outline-none transition placeholder:text-stone-400 focus:border-brand focus:ring-4 focus:ring-brand/10 disabled:cursor-not-allowed disabled:bg-stone-50 disabled:text-stone-500 sm:text-sm";
@@ -33,6 +34,7 @@ export function CustomSelect<T extends string>({
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const field = useFieldControl();
 
   useEffect(() => {
     if (!open) return;
@@ -59,10 +61,13 @@ export function CustomSelect<T extends string>({
     <div ref={ref} className={cn("relative", className)}>
       <button
         type="button"
+        id={field?.id}
         onClick={() => !disabled && setOpen((v) => !v)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        aria-label={ariaLabel ?? label}
+        aria-label={ariaLabel ?? label ?? field?.label}
+        aria-describedby={mergeAriaDescribedBy(field?.describedBy)}
+        aria-invalid={field?.invalid ? true : undefined}
         disabled={disabled}
         className={cn(
           controlClasses,

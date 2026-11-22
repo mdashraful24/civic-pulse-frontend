@@ -78,7 +78,9 @@ export default function ActivityPage() {
                         </td>
                         <td className="px-4 py-3 text-xs text-stone-600">
                           {item.targetType}
-                          {item.targetId ? ` · ${item.targetId.slice(0, 8)}` : ""}
+                          {item.targetId
+                            ? ` · ${item.targetId.slice(0, 8)}`
+                            : ""}
                         </td>
                         <td className="px-4 py-3 text-[11px] text-stone-500">
                           {item.metadata ? JSON.stringify(item.metadata) : "—"}

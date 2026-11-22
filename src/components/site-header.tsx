@@ -114,9 +114,6 @@ export function SiteHeader() {
                 title={`${user.name} · ${roleLabels[user.role]}`}
               >
                 <Avatar name={user.name} src={user.imageUrl} size="sm" />
-                {/* <span className="max-w-28 truncate text-sm font-semibold">
-                  {user.name.split(" ")[0]}
-                </span> */}
               </Link>
             </>
           ) : (

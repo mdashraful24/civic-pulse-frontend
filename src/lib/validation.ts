@@ -152,12 +152,6 @@ export const aiTriageClientSchema = z.strictObject({
   location: z.string().trim().max(200).optional(),
 });
 
-export const assignIssueSchema = z.strictObject({
-  personnelId: z
-    .uuid({ message: "A valid personnel id is required." })
-    .nullable(),
-});
-
 export const updateIssueStatusSchema = z.strictObject({
   status: issueStatusSchema,
   resolutionNote: z

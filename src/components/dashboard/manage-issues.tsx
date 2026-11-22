@@ -36,6 +36,7 @@ import { api, getApiErrorMessage } from "@/lib/api";
 import {
   CATEGORY_OPTIONS,
   IMAGE_ACCEPT,
+  ISSUE_SORT_OPTIONS,
   PRIORITY_OPTIONS,
   STATUS_OPTIONS,
 } from "@/lib/constants";
@@ -46,6 +47,7 @@ import type {
   Issue,
   IssueCategory,
   IssuePriority,
+  IssueSort,
   IssueStatus,
 } from "@/lib/types";
 import {
@@ -67,6 +69,7 @@ export function ManageIssues() {
   const [category, setCategory] = useState<IssueCategory | "">("");
   const [priority, setPriority] = useState<IssuePriority | "">("");
   const [status, setStatus] = useState<IssueStatus | "">("");
+  const [sort, setSort] = useState<IssueSort>("newest");
   const [page, setPage] = useState(1);
   const debouncedSearch = useDebouncedValue(search);
 
@@ -82,7 +85,7 @@ export function ManageIssues() {
   const issuesQuery = useQuery({
     queryKey: [
       "admin-issues",
-      { debouncedSearch, category, priority, status, page },
+      { debouncedSearch, category, priority, status, sort, page },
     ],
     queryFn: () =>
       api.issues.listPublic({
@@ -92,7 +95,7 @@ export function ManageIssues() {
         status: status || undefined,
         page,
         limit: PAGE_SIZE,
-        sort: "newest",
+        sort,
       }),
     placeholderData: keepPreviousData,
     ...cachePolicy.list,
@@ -195,13 +198,16 @@ export function ManageIssues() {
   const issues = issuesQuery.data?.items ?? [];
   const meta = issuesQuery.data?.meta;
   const personnel = personnelQuery.data?.items ?? [];
-  const hasFilters = Boolean(search || category || priority || status);
+  const hasFilters = Boolean(
+    search || category || priority || status || sort !== "newest",
+  );
 
   const resetFilters = () => {
     setSearch("");
     setCategory("");
     setPriority("");
     setStatus("");
+    setSort("newest");
     setPage(1);
   };
 
@@ -223,7 +229,7 @@ export function ManageIssues() {
         />
 
         <div className="mb-5 rounded-2xl border border-line bg-surface p-4 shadow-sm">
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[3fr_1fr_1fr_1fr_auto] lg:items-end">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[3fr_1fr_1fr_1fr_1fr_auto] lg:items-end">
             <FormField
               label="Search issues"
               className="sm:col-span-2 lg:col-span-1"
@@ -236,7 +242,7 @@ export function ManageIssues() {
                     setSearch(event.target.value);
                     setPage(1);
                   }}
-                  placeholder="Search by title…"
+                  placeholder="Title, description or location…"
                   className="pl-10"
                   maxLength={120}
                 />
@@ -273,6 +279,17 @@ export function ManageIssues() {
                 }}
                 placeholder="Any priority"
                 options={PRIORITY_OPTIONS}
+              />
+            </FormField>
+            <FormField label="Sort">
+              <CustomSelect<IssueSort>
+                value={sort}
+                onChange={(value) => {
+                  if (!value) return;
+                  setSort(value);
+                  setPage(1);
+                }}
+                options={ISSUE_SORT_OPTIONS}
               />
             </FormField>
             <Button

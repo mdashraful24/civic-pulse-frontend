@@ -95,7 +95,9 @@ export default function AnalyticsPage() {
 
             <div className="grid gap-5 lg:grid-cols-2">
               <section className="rounded-2xl border border-line bg-surface p-5 shadow-sm">
-                <h3 className="text-sm font-bold text-ink">Reports over time</h3>
+                <h3 className="text-sm font-bold text-ink">
+                  Reports over time
+                </h3>
                 <div className="mt-5 space-y-3">
                   {data.issuesByDay.length ? (
                     data.issuesByDay.map((item) => (
@@ -106,7 +108,9 @@ export default function AnalyticsPage() {
                         <div className="h-3 flex-1 overflow-hidden rounded-full bg-stone-100">
                           <div
                             className="h-full rounded-full bg-brand"
-                            style={{ width: `${(item.count / maxDaily) * 100}%` }}
+                            style={{
+                              width: `${(item.count / maxDaily) * 100}%`,
+                            }}
                           />
                         </div>
                         <span className="w-7 text-right text-[11px] font-semibold text-ink">
@@ -157,7 +161,9 @@ export default function AnalyticsPage() {
             </div>
 
             <section className="rounded-2xl border border-line bg-surface p-5 shadow-sm">
-              <h3 className="text-sm font-bold text-ink">Operational summary</h3>
+              <h3 className="text-sm font-bold text-ink">
+                Operational summary
+              </h3>
               <div className="mt-4 grid gap-4 sm:grid-cols-3">
                 <div>
                   <p className="text-[11px] uppercase tracking-wider text-stone-500">

@@ -12,6 +12,45 @@ test("landing page renders the hero", async ({ page }) => {
   ).toBeVisible();
 });
 
+test("issue browser applies deep search and sorting", async ({ page }) => {
+  const requests: string[] = [];
+
+  await page.route("**/api/issues**", async (route) => {
+    requests.push(route.request().url());
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        success: true,
+        statusCode: 200,
+        message: "Issues retrieved.",
+        data: [],
+        meta: { page: 1, limit: 9, total: 0, totalPages: 0 },
+      }),
+    });
+  });
+
+  await page.goto("/issues?search=lamp&sort=priority");
+
+  await expect(page.getByText("0 reports found")).toBeVisible();
+  await expect(page.getByText("High priority first")).toBeVisible();
+
+  const url = new URL(requests[0]);
+  expect(url.searchParams.get("search")).toBe("lamp");
+  expect(url.searchParams.get("sort")).toBe("priority");
+});
+
+test("skip link moves focus to main content", async ({ page }) => {
+  await page.goto("/");
+  const skipLink = page.getByRole("link", { name: "Skip to main content" });
+
+  await skipLink.focus();
+  await expect(skipLink).toBeVisible();
+  await page.keyboard.press("Enter");
+
+  await expect(page.locator("#main-content")).toBeFocused();
+});
+
 test("login page renders the sign-in form", async ({ page }) => {
   await page.goto("/login");
   await expect(

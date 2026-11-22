@@ -316,6 +316,9 @@ For endpoint details, authentication cookies, and request examples, see the [bac
 CivicPulse uses a responsive, mobile-first interface with:
 
 - Shared buttons, fields, badges, modals, pagination, feedback, and loading states
+- Skip link to the main content region
+- Automatic label, hint, error, `aria-describedby` and `aria-invalid` wiring for shared form fields
+- Modal focus trap and focus restoration
 - Keyboard-visible focus treatment
 - Reduced-motion support
 - Responsive navigation for public and dashboard layouts

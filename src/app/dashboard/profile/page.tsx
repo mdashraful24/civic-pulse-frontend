@@ -259,29 +259,6 @@ export default function ProfilePage() {
               />
             </dl>
           </section>
-
-          {/* <section className="rounded-2xl border border-line bg-[#fbfaf6] p-5">
-            <div className="flex items-center gap-2">
-              <LogOut className="h-4 w-4 text-stone-500" />
-              <h2 className="text-sm font-bold uppercase tracking-[0.12em] text-stone-500">
-                Session
-              </h2>
-            </div>
-            <p className="mt-2 text-xs leading-5 text-stone-500">
-              Signing out clears the secure cookie session on this device. Your
-              reports stay exactly where they are.
-            </p>
-            <Button
-              variant="outline"
-              size="sm"
-              className="mt-3 bg-surface text-rose-600 hover:border-rose-200 hover:bg-rose-50"
-              loading={logoutPending}
-              onClick={() => void handleLogout()}
-            >
-              <LogOut className="h-3.5 w-3.5" />
-              Sign out
-            </Button>
-          </section> */}
         </div>
 
         <div className="space-y-5">

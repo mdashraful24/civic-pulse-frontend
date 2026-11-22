@@ -34,11 +34,15 @@ import { Modal } from "@/components/ui/modal";
 import { Pagination } from "@/components/ui/pagination";
 import { PhotoPreviewDialog } from "@/components/ui/photo-preview-dialog";
 import { api, getApiErrorMessage } from "@/lib/api";
-import { IMAGE_ACCEPT, STATUS_OPTIONS } from "@/lib/constants";
+import {
+  IMAGE_ACCEPT,
+  ISSUE_SORT_OPTIONS,
+  STATUS_OPTIONS,
+} from "@/lib/constants";
 import { formatDate, timeAgo } from "@/lib/format";
 import { useDebouncedValue, useObjectUrl } from "@/lib/hooks";
 import { cachePolicy, invalidateIssueCaches } from "@/lib/query-cache";
-import type { Issue, IssueStatus } from "@/lib/types";
+import type { Issue, IssueSort, IssueStatus } from "@/lib/types";
 import { validateImageFile } from "@/lib/validation";
 
 const PAGE_SIZE = 6;
@@ -48,6 +52,7 @@ export default function MyIssuesPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<IssueStatus | "">("");
+  const [sort, setSort] = useState<IssueSort>("newest");
   const [page, setPage] = useState(1);
   const [editing, setEditing] = useState<Issue | null>(null);
   const [deleting, setDeleting] = useState<Issue | null>(null);
@@ -60,14 +65,14 @@ export default function MyIssuesPage() {
   const debouncedSearch = useDebouncedValue(search);
 
   const query = useQuery({
-    queryKey: ["my-issues", { debouncedSearch, status, page }],
+    queryKey: ["my-issues", { debouncedSearch, status, sort, page }],
     queryFn: () =>
       api.issues.mine({
         search: debouncedSearch || undefined,
         status: status || undefined,
         page,
         limit: PAGE_SIZE,
-        sort: "newest",
+        sort,
       }),
     placeholderData: keepPreviousData,
     ...cachePolicy.list,
@@ -145,7 +150,7 @@ export default function MyIssuesPage() {
         />
 
         <div className="mb-5 rounded-2xl border border-line bg-surface p-4 shadow-sm">
-          <div className="grid gap-3 sm:grid-cols-[1.6fr_1fr]">
+          <div className="grid gap-3 sm:grid-cols-[1.6fr_1fr_1fr]">
             <FormField label="Search my issues">
               <Input
                 value={search}
@@ -153,7 +158,7 @@ export default function MyIssuesPage() {
                   setSearch(event.target.value);
                   setPage(1);
                 }}
-                placeholder="Search by title…"
+                placeholder="Title, description or location…"
                 maxLength={120}
               />
             </FormField>
@@ -166,6 +171,17 @@ export default function MyIssuesPage() {
                 }}
                 placeholder="Any status"
                 options={STATUS_OPTIONS}
+              />
+            </FormField>
+            <FormField label="Sort">
+              <CustomSelect<IssueSort>
+                value={sort}
+                onChange={(value) => {
+                  if (!value) return;
+                  setSort(value);
+                  setPage(1);
+                }}
+                options={ISSUE_SORT_OPTIONS}
               />
             </FormField>
           </div>

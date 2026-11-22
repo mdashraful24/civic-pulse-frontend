@@ -1,6 +1,7 @@
 import type {
   IssueCategory,
   IssuePriority,
+  IssueSort,
   IssueStatus,
   Role,
   UserStatus,
@@ -54,6 +55,17 @@ export const STATUS_OPTIONS: ReadonlyArray<{
   { value: "PENDING", label: "Pending" },
   { value: "IN_PROGRESS", label: "In progress" },
   { value: "RESOLVED", label: "Resolved" },
+];
+
+export const ISSUE_SORT_OPTIONS: ReadonlyArray<{
+  value: IssueSort;
+  label: string;
+}> = [
+  { value: "newest", label: "Newest first" },
+  { value: "oldest", label: "Oldest first" },
+  { value: "updated", label: "Recently updated" },
+  { value: "priority", label: "High priority first" },
+  { value: "title", label: "Title A–Z" },
 ];
 
 export const ROLE_OPTIONS: ReadonlyArray<{ value: Role; label: string }> = [

@@ -116,6 +116,8 @@ export type PasswordResetOtp = {
   expiresAt: string;
 };
 
+export type IssueSort = "newest" | "oldest" | "updated" | "priority" | "title";
+
 export type IssueListParams = {
   search?: string;
   category?: IssueCategory | "";
@@ -123,7 +125,7 @@ export type IssueListParams = {
   status?: IssueStatus | "";
   page?: number;
   limit?: number;
-  sort?: "newest" | "oldest";
+  sort?: IssueSort;
 };
 
 export type AdminUsersParams = {

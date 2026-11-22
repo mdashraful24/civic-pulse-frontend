@@ -31,11 +31,11 @@ import { FormField, Input, Textarea } from "@/components/ui/field";
 import { Modal } from "@/components/ui/modal";
 import { Pagination } from "@/components/ui/pagination";
 import { api, getApiErrorMessage } from "@/lib/api";
-import { STATUS_OPTIONS } from "@/lib/constants";
+import { ISSUE_SORT_OPTIONS, STATUS_OPTIONS } from "@/lib/constants";
 import { formatDateTime, timeAgo } from "@/lib/format";
 import { useDebouncedValue } from "@/lib/hooks";
 import { cachePolicy, invalidateIssueCaches } from "@/lib/query-cache";
-import type { Issue, IssueStatus } from "@/lib/types";
+import type { Issue, IssueSort, IssueStatus } from "@/lib/types";
 import { updateIssueStatusSchema } from "@/lib/validation";
 
 const PAGE_SIZE = 6;
@@ -52,6 +52,7 @@ function AssignedIssuesContent() {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<IssueStatus | "">("");
+  const [sort, setSort] = useState<IssueSort>("newest");
   const [page, setPage] = useState(1);
   const [resolving, setResolving] = useState<Issue | null>(null);
   const [note, setNote] = useState("");
@@ -59,14 +60,14 @@ function AssignedIssuesContent() {
   const debouncedSearch = useDebouncedValue(search);
 
   const query = useQuery({
-    queryKey: ["assigned-issues", { debouncedSearch, status, page }],
+    queryKey: ["assigned-issues", { debouncedSearch, status, sort, page }],
     queryFn: () =>
       api.issues.assigned({
         search: debouncedSearch || undefined,
         status: status || undefined,
         page,
         limit: PAGE_SIZE,
-        sort: "newest",
+        sort,
       }),
     placeholderData: keepPreviousData,
     ...cachePolicy.list,
@@ -135,7 +136,7 @@ function AssignedIssuesContent() {
         />
 
         <div className="mb-5 rounded-2xl border border-line bg-surface p-4 shadow-sm">
-          <div className="grid gap-3 sm:grid-cols-[1.6fr_1fr]">
+          <div className="grid gap-3 sm:grid-cols-[1.6fr_1fr_1fr]">
             <FormField label="Search assigned issues">
               <div className="relative">
                 <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
@@ -145,7 +146,7 @@ function AssignedIssuesContent() {
                     setSearch(event.target.value);
                     setPage(1);
                   }}
-                  placeholder="Search by title…"
+                  placeholder="Title, description or location…"
                   className="pl-10"
                   maxLength={120}
                 />
@@ -160,6 +161,17 @@ function AssignedIssuesContent() {
                 }}
                 placeholder="Any status"
                 options={STATUS_OPTIONS}
+              />
+            </FormField>
+            <FormField label="Sort">
+              <CustomSelect<IssueSort>
+                value={sort}
+                onChange={(value) => {
+                  if (!value) return;
+                  setSort(value);
+                  setPage(1);
+                }}
+                options={ISSUE_SORT_OPTIONS}
               />
             </FormField>
           </div>

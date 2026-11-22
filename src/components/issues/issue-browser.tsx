@@ -14,13 +14,19 @@ import { api, getApiErrorMessage } from "@/lib/api";
 import {
   CATEGORY_OPTIONS,
   categoryLabels,
+  ISSUE_SORT_OPTIONS,
   PRIORITY_OPTIONS,
   STATUS_OPTIONS,
 } from "@/lib/constants";
 import { formatNumber } from "@/lib/format";
 import { useDebouncedValue } from "@/lib/hooks";
 import { cachePolicy } from "@/lib/query-cache";
-import type { IssueCategory, IssuePriority, IssueStatus } from "@/lib/types";
+import type {
+  IssueCategory,
+  IssuePriority,
+  IssueSort,
+  IssueStatus,
+} from "@/lib/types";
 
 const PAGE_SIZE = 9;
 
@@ -33,6 +39,7 @@ export function IssueBrowser() {
     const priority = searchParams.get("priority") ?? "";
     const status = searchParams.get("status") ?? "";
     const pageParam = Number(searchParams.get("page"));
+    const sortParam = searchParams.get("sort") ?? "newest";
     return {
       search: searchParams.get("search") ?? "",
       category: CATEGORY_OPTIONS.some((item) => item.value === category)
@@ -44,10 +51,9 @@ export function IssueBrowser() {
       status: STATUS_OPTIONS.some((item) => item.value === status)
         ? (status as IssueStatus)
         : ("" as const),
-      sort:
-        searchParams.get("sort") === "oldest"
-          ? ("oldest" as const)
-          : ("newest" as const),
+      sort: ISSUE_SORT_OPTIONS.some((item) => item.value === sortParam)
+        ? (sortParam as IssueSort)
+        : ("newest" as const),
       page: Number.isInteger(pageParam) && pageParam > 0 ? pageParam : 1,
     };
   }, [searchParams]);
@@ -60,7 +66,7 @@ export function IssueBrowser() {
     initial.priority,
   );
   const [status, setStatus] = useState<IssueStatus | "">(initial.status);
-  const [sort, setSort] = useState<"newest" | "oldest">(initial.sort);
+  const [sort, setSort] = useState<IssueSort>(initial.sort);
   const [page, setPage] = useState(initial.page);
   const debouncedSearch = useDebouncedValue(searchInput);
   const lastSyncedUrl = useRef<string | null>(null);
@@ -184,7 +190,7 @@ export function IssueBrowser() {
                     setSearchInput(event.target.value);
                     setPage(1);
                   }}
-                  placeholder="Title, keyword, location…"
+                  placeholder="Title, description or location…"
                   className="pl-10"
                   maxLength={120}
                 />
@@ -253,23 +259,19 @@ export function IssueBrowser() {
               </span>
             ) : null}
           </div>
-          <FormField label="" className="w-full sm:w-auto">
-            <CustomSelect<"newest" | "oldest">
+          <div className="w-full sm:w-auto">
+            <CustomSelect<IssueSort>
               ariaLabel="Sort reports"
               value={sort}
               onChange={(value) => {
-                if (value === "newest" || value === "oldest") {
-                  setSort(value);
-                  setPage(1);
-                }
+                if (!value) return;
+                setSort(value);
+                setPage(1);
               }}
               className="min-w-44"
-              options={[
-                { value: "newest", label: "Newest first" },
-                { value: "oldest", label: "Oldest first" },
-              ]}
+              options={ISSUE_SORT_OPTIONS}
             />
-          </FormField>
+          </div>
         </div>
 
         {query.isError ? (
