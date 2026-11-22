@@ -129,6 +129,61 @@ export type AdminUsersParams = {
   limit?: number;
 };
 
+export type AdminAction = {
+  id: string;
+  action: string;
+  targetType: string;
+  targetId: string | null;
+  metadata: Record<string, unknown> | null;
+  createdAt: string;
+  actor: { id: string; name: string; email: string; role: Role };
+};
+
+export type ModerationFlag = {
+  id: string;
+  reason: string;
+  status: "PENDING" | "RESOLVED" | "DISMISSED";
+  action: "NONE" | "HIDE" | "APPROVE";
+  resolutionNote: string | null;
+  createdAt: string;
+  resolvedAt: string | null;
+  issue: {
+    id: string;
+    title: string;
+    category: IssueCategory;
+    status: IssueStatus;
+    moderationStatus: "VISIBLE" | "HIDDEN";
+  };
+  reporter: { id: string; name: string; email: string };
+  resolvedBy: { id: string; name: string } | null;
+};
+
+export type ModerationFlagsParams = {
+  status?: ModerationFlag["status"] | "";
+  page?: number;
+  limit?: number;
+};
+
+export type AdminAnalytics = {
+  days: number;
+  totalIssues: number;
+  resolved: number;
+  pending: number;
+  highPriority: number;
+  resolutionRate: number;
+  averageResolutionHours: number;
+  newUsers: number;
+  issuesByDay: Array<{ date: string; count: number }>;
+  usersByDay: Array<{ date: string; count: number }>;
+  categories: Array<{ category: IssueCategory; count: number }>;
+};
+
+export type AppSetting = {
+  key: string;
+  value: string;
+  updatedAt: string;
+};
+
 export type CreateIssuePayload = {
   title: string;
   description: string;

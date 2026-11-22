@@ -1,4 +1,6 @@
 import type {
+  AdminAction,
+  AdminAnalytics,
   AdminUser,
   AdminUsersParams,
   AIAssigneeRecommendation,
@@ -11,12 +13,15 @@ import type {
   AISummarySuggestion,
   AITriageSuggestion,
   ApiEnvelope,
+  AppSetting,
   AuthUser,
   CreateIssuePayload,
   Issue,
   IssueHistoryEntry,
   IssueListParams,
   IssueStats,
+  ModerationFlag,
+  ModerationFlagsParams,
   PageResult,
   RegistrationOtp,
   UpdateIssuePayload,
@@ -353,6 +358,72 @@ export const api = {
       request<null>(`/admin/users/${id}/image`, {
         method: "DELETE",
       }),
+    changeUserRole: (id: string, role: AdminUser["role"]) =>
+      unwrap(
+        request<AdminUser>(`/admin/users/${id}/role`, {
+          method: "PATCH",
+          body: { role },
+        }),
+      ),
+    changeUserStatus: (id: string, status: "ACTIVE" | "BLOCKED") =>
+      unwrap(
+        request<AdminUser>(`/admin/users/${id}/status`, {
+          method: "PATCH",
+          body: { status },
+        }),
+      ),
+    deleteUser: (id: string) =>
+      request<null>(`/admin/users/${id}`, { method: "DELETE" }),
+    resetUserPassword: (id: string) =>
+      unwrap(
+        request<{ temporaryPassword: string }>(
+          `/admin/users/${id}/reset-password`,
+          { method: "POST" },
+        ),
+      ),
+    terminateUserSessions: (id: string) =>
+      request<null>(`/admin/users/${id}/terminate-sessions`, {
+        method: "POST",
+      }),
+    analytics: (days: 7 | 30 | 90 = 30) =>
+      unwrap(request<AdminAnalytics>(`/admin/analytics?days=${days}`)),
+    activity: (params: { page?: number; limit?: number } = {}) =>
+      request<AdminAction[]>(`/admin/activity${queryString(params)}`).then(
+        page,
+      ),
+    flags: (params: ModerationFlagsParams = {}) =>
+      request<ModerationFlag[]>(
+        `/admin/moderation/flags${queryString(params)}`,
+      ).then(page),
+    createFlag: (payload: { issueId: string; reason: string }) =>
+      unwrap(
+        request<ModerationFlag>("/admin/moderation/flags", {
+          method: "POST",
+          body: payload,
+        }),
+      ),
+    resolveFlag: (
+      id: string,
+      payload: {
+        status: ModerationFlag["status"];
+        action: ModerationFlag["action"];
+        note?: string;
+      },
+    ) =>
+      unwrap(
+        request<ModerationFlag>(`/admin/moderation/flags/${id}`, {
+          method: "PATCH",
+          body: payload,
+        }),
+      ),
+    settings: () => unwrap(request<AppSetting[]>("/admin/settings")),
+    saveSetting: (key: string, value: string) =>
+      unwrap(
+        request<AppSetting>("/admin/settings", {
+          method: "PUT",
+          body: { key, value },
+        }),
+      ),
   },
   ai: {
     capabilities: () => unwrap(request<AICapabilities>("/ai/capabilities")),

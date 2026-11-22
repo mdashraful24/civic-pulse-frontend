@@ -1,14 +1,18 @@
 "use client";
 
 import {
+  Activity,
+  BarChart3,
   ClipboardList,
   ExternalLink,
+  Flag,
   LayoutDashboard,
   LogOut,
   Menu,
   PlusCircle,
   Settings,
   ShieldCheck,
+  SlidersHorizontal,
   Sparkles,
   Users,
   Wrench,
@@ -60,6 +64,30 @@ const navItems: Array<{
     href: "/dashboard/users",
     label: "People",
     icon: Users,
+    roles: ["ADMIN"],
+  },
+  {
+    href: "/dashboard/analytics",
+    label: "Analytics",
+    icon: BarChart3,
+    roles: ["ADMIN"],
+  },
+  {
+    href: "/dashboard/activity",
+    label: "Activity log",
+    icon: Activity,
+    roles: ["ADMIN"],
+  },
+  {
+    href: "/dashboard/moderation",
+    label: "Moderation",
+    icon: Flag,
+    roles: ["ADMIN"],
+  },
+  {
+    href: "/dashboard/settings",
+    label: "App settings",
+    icon: SlidersHorizontal,
     roles: ["ADMIN"],
   },
   {

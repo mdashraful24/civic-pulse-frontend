@@ -18,6 +18,7 @@ import {
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/components/auth-provider";
+import { AdminUserControls } from "@/components/dashboard/admin-user-controls";
 import { RoleGate } from "@/components/dashboard/auth-guard";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { RoleBadge, UserStatusBadge } from "@/components/issues/issue-badges";
@@ -254,6 +255,7 @@ export default function AdminUsersPage() {
                       <th className="px-4 py-3">Status</th>
                       <th className="px-4 py-3">Activity</th>
                       <th className="px-4 py-3">Joined</th>
+                      <th className="px-4 py-3 text-right">Controls</th>
                       <th className="px-5 py-3 text-right">Photo</th>
                     </tr>
                   </thead>
@@ -306,6 +308,9 @@ export default function AdminUsersPage() {
                               ? `Last seen ${timeAgo(user.lastLoginAt)}`
                               : "Never signed in"}
                           </p>
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <AdminUserControls user={user} />
                         </td>
                         <td className="px-5 py-3">
                           <div className="flex items-center justify-end gap-1">
@@ -393,6 +398,9 @@ export default function AdminUsersPage() {
                         Remove
                       </Button>
                     ) : null}
+                    <div className="ml-auto">
+                      <AdminUserControls user={user} />
+                    </div>
                   </div>
                 </div>
               ))}

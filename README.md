@@ -104,6 +104,8 @@ Leave any email/password pair blank to hide that role's quick-login button.
 - Assign issues to personnel
 - Update issue status and add resolution notes
 - Search and manage platform users
+- Change user roles, block or unblock accounts, reset passwords, terminate sessions and delete accounts
+- Review analytics, the admin activity log, the moderation queue and app settings
 
 ### Personnel workspace
 
@@ -202,6 +204,11 @@ src/
 /dashboard/manage
 /dashboard/assigned
 /dashboard/users
+/dashboard/analytics
+/dashboard/activity
+/dashboard/moderation
+/dashboard/settings
+/dashboard/ai
 /dashboard/profile
 ```
 
@@ -250,6 +257,19 @@ Open [http://localhost:3000](http://localhost:3000).
 bun run build
 bun run start
 ```
+
+### Run tests
+
+```bash
+bun run test          # Vitest + Testing Library component tests
+bun run test:e2e      # Playwright smoke tests (install chromium first)
+```
+
+```bash
+bunx playwright install chromium
+```
+
+The suite includes 7 component tests and 8 Playwright E2E tests covering public pages, AI and admin flows.
 
 ### Check code quality
 
