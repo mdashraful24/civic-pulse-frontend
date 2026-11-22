@@ -120,64 +120,66 @@ export default function ModerationPage() {
   const result = query.data;
 
   return (
-    <RoleGate allow={["ADMIN"]}>
-      <PageHeader
-        eyebrow="Administration"
-        title="Moderation"
-        description="Review community reports and hide or approve affected issues."
-        actions={
-          <CustomSelect
-            ariaLabel="Filter moderation reports"
-            value={status}
-            onChange={(value) => {
-              setStatus(value as ModerationFlag["status"] | "");
-              setPage(1);
-            }}
-            options={statusOptions}
-            className="w-48"
-          />
-        }
-      />
-
-      {query.isLoading ? (
-        <div className="space-y-3">
-          {[0, 1, 2].map((item) => (
-            <Skeleton key={item} className="h-40 rounded-2xl" />
-          ))}
-        </div>
-      ) : null}
-
-      {query.isError ? (
-        <EmptyState
-          title="Moderation queue unavailable"
-          description={getApiErrorMessage(query.error)}
+    <div className="mx-auto w-full max-w-6xl">
+      <RoleGate allow={["ADMIN"]}>
+        <PageHeader
+          eyebrow="Administration"
+          title="Moderation"
+          description="Review community reports and hide or approve affected issues."
+          actions={
+            <CustomSelect
+              ariaLabel="Filter moderation reports"
+              value={status}
+              onChange={(value) => {
+                setStatus(value as ModerationFlag["status"] | "");
+                setPage(1);
+              }}
+              options={statusOptions}
+              className="w-48"
+            />
+          }
         />
-      ) : null}
 
-      {result ? (
-        <>
+        {query.isLoading ? (
           <div className="space-y-3">
-            {result.items.map((item) => (
-              <FlagCard key={item.id} flag={item} />
+            {[0, 1, 2].map((item) => (
+              <Skeleton key={item} className="h-40 rounded-2xl" />
             ))}
           </div>
-          {!result.items.length ? (
-            <EmptyState
-              icon={<Flag className="h-5 w-5" />}
-              title="Queue is clear"
-              description="There are no reports with this status."
-            />
-          ) : null}
-          <Pagination
-            className="mt-5"
-            page={page}
-            totalPages={result.meta.totalPages}
-            total={result.meta.total}
-            summaryLabel="report"
-            onPageChange={setPage}
+        ) : null}
+
+        {query.isError ? (
+          <EmptyState
+            title="Moderation queue unavailable"
+            description={getApiErrorMessage(query.error)}
           />
-        </>
-      ) : null}
-    </RoleGate>
+        ) : null}
+
+        {result ? (
+          <>
+            <div className="space-y-3">
+              {result.items.map((item) => (
+                <FlagCard key={item.id} flag={item} />
+              ))}
+            </div>
+            {!result.items.length ? (
+              <EmptyState
+                icon={<Flag className="h-5 w-5" />}
+                title="Queue is clear"
+                description="There are no reports with this status."
+              />
+            ) : null}
+            <Pagination
+              className="mt-5"
+              page={page}
+              totalPages={result.meta.totalPages}
+              total={result.meta.total}
+              summaryLabel="report"
+              onPageChange={setPage}
+            />
+          </>
+        ) : null}
+      </RoleGate>
+    </div>
   );
 }
