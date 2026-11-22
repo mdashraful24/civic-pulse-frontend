@@ -173,6 +173,15 @@ export default function LoginPage() {
           </div>
         </FormField>
 
+        <div className="-mt-1 flex justify-end">
+          <Link
+            href="/forgot-password"
+            className="text-xs font-semibold text-brand hover:text-brand-dark"
+          >
+            Forgot your password?
+          </Link>
+        </div>
+
         {formError ? (
           <div className="rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-3 text-sm text-rose-700">
             {formError}

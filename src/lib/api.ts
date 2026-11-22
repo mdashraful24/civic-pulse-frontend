@@ -23,6 +23,7 @@ import type {
   ModerationFlag,
   ModerationFlagsParams,
   PageResult,
+  PasswordResetOtp,
   RegistrationOtp,
   UpdateIssuePayload,
   UpdateStatusPayload,
@@ -54,6 +55,8 @@ const NO_REFRESH_PATHS = [
   "/auth/resend-otp",
   "/auth/refresh-token",
   "/auth/logout",
+  "/auth/forgot-password",
+  "/auth/reset-password",
 ];
 
 const serializeBody = (body: unknown): BodyInit | undefined => {
@@ -258,6 +261,22 @@ export const api = {
     removeProfileImage: () =>
       request<AuthUser>("/auth/me/image", {
         method: "DELETE",
+      }),
+    forgotPassword: (email: string) =>
+      request<PasswordResetOtp>("/auth/forgot-password", {
+        method: "POST",
+        body: { email },
+        skipRefresh: true,
+      }),
+    resetPassword: (payload: {
+      email: string;
+      otp: string;
+      newPassword: string;
+    }) =>
+      request<null>("/auth/reset-password", {
+        method: "POST",
+        body: payload,
+        skipRefresh: true,
       }),
     changePassword: (payload: { newPassword: string }) =>
       request<null>("/auth/change-password", {

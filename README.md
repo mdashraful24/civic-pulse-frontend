@@ -30,29 +30,29 @@ CivicPulse is a community issue reporting and management platform. Residents can
 
 ## Demo accounts
 
-The demo accounts are created by the backend seed script. All three share the same quick-login buttons on the [login page](https://civic-pulse-frontend-flame.vercel.app/login).
+Demo accounts are opt-in and created only by the backend seed script when `SEED_ON_START=true`. The backend no longer ships default seed credentials; supply your own local `SEED_*_EMAIL` and `SEED_*_PASSWORD` values.
 
-| Role | Name | Email | Password | Default workspace |
-| --- | --- | --- | --- | --- |
-| Admin | CivicPulse Admin | `admin@civicpulse.local` | `Admin@12345` | `/dashboard/manage`, `/dashboard/users` |
-| Personnel | CivicPulse Personnel | `personnel@civicpulse.local` | `Personnel@12345` | `/dashboard/assigned` |
-| Citizen | CivicPulse Citizen | `citizen@civicpulse.local` | `Citizen@12345` | `/dashboard/report`, `/dashboard/my-issues` |
+| Role | Example email | Default workspace |
+| --- | --- | --- |
+| Admin | `admin@example.test` | `/dashboard/manage`, `/dashboard/users` |
+| Personnel | `personnel@example.test` | `/dashboard/assigned` |
+| Citizen | `citizen@example.test` | `/dashboard/report`, `/dashboard/my-issues` |
 
-> These credentials are for the seeded demo environment only. Change the `SEED_*` variables and set `SEED_ON_START=false` for any non-local or production deployment.
+> Demo data is rejected in production. Quick-login buttons appear only when matching `NEXT_PUBLIC_QUICK_LOGIN_*` variables are set locally.
 
 ### Quick login
 
 The login page can render one-click role buttons when the following environment variables are set:
 
 ```dotenv
-NEXT_PUBLIC_QUICK_LOGIN_CITIZEN_EMAIL="citizen@civicpulse.local"
-NEXT_PUBLIC_QUICK_LOGIN_CITIZEN_PASSWORD="Citizen@12345"
+NEXT_PUBLIC_QUICK_LOGIN_CITIZEN_EMAIL="your-local-citizen@example.test"
+NEXT_PUBLIC_QUICK_LOGIN_CITIZEN_PASSWORD="your-local-password"
 
-NEXT_PUBLIC_QUICK_LOGIN_PERSONNEL_EMAIL="personnel@civicpulse.local"
-NEXT_PUBLIC_QUICK_LOGIN_PERSONNEL_PASSWORD="Personnel@12345"
+NEXT_PUBLIC_QUICK_LOGIN_PERSONNEL_EMAIL="your-local-personnel@example.test"
+NEXT_PUBLIC_QUICK_LOGIN_PERSONNEL_PASSWORD="your-local-password"
 
-NEXT_PUBLIC_QUICK_LOGIN_ADMIN_EMAIL="admin@civicpulse.local"
-NEXT_PUBLIC_QUICK_LOGIN_ADMIN_PASSWORD="Admin@12345"
+NEXT_PUBLIC_QUICK_LOGIN_ADMIN_EMAIL="your-local-admin@example.test"
+NEXT_PUBLIC_QUICK_LOGIN_ADMIN_PASSWORD="your-local-password"
 ```
 
 Leave any email/password pair blank to hide that role's quick-login button.
@@ -96,6 +96,7 @@ Leave any email/password pair blank to hide that role's quick-login button.
 - View and manage personally reported issues
 - Track pending, in-progress, and resolved reports
 - Manage profile and account security settings
+- Request a password-reset code and choose a new password without being signed in
 
 ### Administrator workspace
 
@@ -190,6 +191,8 @@ src/
 /login
 /register
 /verify-email
+/forgot-password
+/reset-password
 /terms
 /privacy
 /security
@@ -269,7 +272,7 @@ bun run test:e2e      # Playwright smoke tests (install chromium first)
 bunx playwright install chromium
 ```
 
-The suite includes 7 component tests and 8 Playwright E2E tests covering public pages, AI and admin flows.
+The suite includes 7 component tests and 10 Playwright E2E tests covering public pages, password recovery, AI and admin flows.
 
 ### Check code quality
 
@@ -297,7 +300,7 @@ bun run format
 
 The frontend expects a REST API behind the `/api` path. The client handles:
 
-- Registration, login, email verification, OTP resend, logout, and token refresh
+- Registration, login, email verification, OTP resend, password recovery, logout, and token refresh
 - Current-user information and profile updates
 - Paginated issue listing and issue details
 - Issue creation, editing, assignment, and status changes
@@ -306,7 +309,7 @@ The frontend expects a REST API behind the `/api` path. The client handles:
 
 Responses use the typed API envelope defined in [`src/lib/types.ts`](./src/lib/types.ts). Request and response behavior is centralized in [`src/lib/api.ts`](./src/lib/api.ts).
 
-For endpoint details, authentication cookies, and request examples, see the [backend API reference](https://github.com/mdashraful24/civic-pulse-backend#api-reference).
+For endpoint details, authentication cookies, and request examples, see the [backend API reference](https://github.com/mdashraful24/civic-pulse-backend#api-reference). The shared request flow is documented in [`docs/FRONTEND_BACKEND.md`](../docs/FRONTEND_BACKEND.md).
 
 ## Design and accessibility
 

@@ -57,6 +57,19 @@ export const changePasswordSchema = z.strictObject({
   newPassword: strongPasswordSchema,
 });
 
+export const forgotPasswordSchema = z.strictObject({
+  email: emailSchema,
+});
+
+export const resetPasswordSchema = z.strictObject({
+  email: emailSchema,
+  otp: z
+    .string()
+    .trim()
+    .regex(/^\d{6}$/, "The reset code must be 6 digits."),
+  newPassword: strongPasswordSchema,
+});
+
 export const issueCategorySchema = z.enum([
   "ROADS",
   "STREETLIGHTS",
@@ -181,6 +194,8 @@ export type RegisterValues = z.infer<typeof registerSchema>;
 export type LoginValues = z.infer<typeof loginSchema>;
 export type VerifyEmailValues = z.infer<typeof verifyEmailSchema>;
 export type ChangePasswordValues = z.infer<typeof changePasswordSchema>;
+export type ForgotPasswordValues = z.infer<typeof forgotPasswordSchema>;
+export type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
 export type CreateIssueValues = z.infer<typeof createIssueSchema>;
 export type UpdateIssueValues = z.infer<typeof updateIssueSchema>;
 export type UpdateIssueStatusValues = z.infer<typeof updateIssueStatusSchema>;

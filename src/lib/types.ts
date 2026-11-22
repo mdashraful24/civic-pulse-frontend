@@ -111,6 +111,11 @@ export type RegistrationOtp = {
   sessionExpiresIn: number;
 };
 
+export type PasswordResetOtp = {
+  expiresIn: number;
+  expiresAt: string;
+};
+
 export type IssueListParams = {
   search?: string;
   category?: IssueCategory | "";
