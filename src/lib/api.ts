@@ -1,6 +1,15 @@
 import type {
   AdminUser,
   AdminUsersParams,
+  AIAssigneeRecommendation,
+  AIAttribution,
+  AICapabilities,
+  AICategorySuggestion,
+  AIPayload,
+  AIPrioritySuggestion,
+  AISimilarIssue,
+  AISummarySuggestion,
+  AITriageSuggestion,
   ApiEnvelope,
   AuthUser,
   CreateIssuePayload,
@@ -161,6 +170,12 @@ const queryString = (params: Record<string, unknown>) => {
   }
   const value = search.toString();
   return value ? `?${value}` : "";
+};
+
+const unwrap = async <T>(promise: Promise<ApiEnvelope<T>>): Promise<T> => {
+  const response = await promise;
+  if (!response.data) throw new ApiError(500, "AI response was empty.");
+  return response.data;
 };
 
 const page = <T>(response: ApiEnvelope<T[]>): PageResult<T> => ({
@@ -338,6 +353,87 @@ export const api = {
       request<null>(`/admin/users/${id}/image`, {
         method: "DELETE",
       }),
+  },
+  ai: {
+    capabilities: () => unwrap(request<AICapabilities>("/ai/capabilities")),
+    categorize: (payload: AIPayload) =>
+      unwrap(
+        request<AICategorySuggestion>("/ai/categorize", {
+          method: "POST",
+          body: {
+            title: payload.title,
+            description: payload.description,
+          },
+        }),
+      ),
+    prioritize: (payload: AIPayload) =>
+      unwrap(
+        request<AIPrioritySuggestion>("/ai/prioritize", {
+          method: "POST",
+          body: {
+            title: payload.title,
+            description: payload.description,
+            category: payload.category || undefined,
+            location: payload.location || undefined,
+          },
+        }),
+      ),
+    summarize: (payload: AIPayload) =>
+      unwrap(
+        request<AISummarySuggestion>("/ai/summarize", {
+          method: "POST",
+          body: payload.issueId
+            ? { issueId: payload.issueId }
+            : { text: payload.description },
+        }),
+      ),
+    duplicates: (payload: AIPayload & { excludeId?: string; limit?: number }) =>
+      unwrap(
+        request<{
+          matches: AISimilarIssue[];
+          attribution: AIAttribution;
+        }>("/ai/duplicates", {
+          method: "POST",
+          body: {
+            title: payload.title,
+            description: payload.description,
+            excludeId: payload.excludeId,
+            limit: payload.limit,
+          },
+        }),
+      ),
+    search: (q: string, limit = 8) =>
+      unwrap(
+        request<{
+          query: string;
+          results: AISimilarIssue[];
+          attribution: AIAttribution;
+        }>(`/ai/search${queryString({ q, limit })}`),
+      ),
+    recommendAssignee: (issueId: string) =>
+      unwrap(
+        request<{
+          issueId: string;
+          recommendations: AIAssigneeRecommendation[];
+          attribution: AIAttribution;
+        }>("/ai/recommend-assignee", {
+          method: "POST",
+          body: { issueId },
+        }),
+      ),
+    triage: (payload: AIPayload) =>
+      unwrap(
+        request<AITriageSuggestion>("/ai/triage", {
+          method: "POST",
+          body: {
+            title: payload.title,
+            description: payload.description,
+            category: payload.category || undefined,
+            location: payload.location || undefined,
+            issueId: payload.issueId,
+          },
+        }),
+      ),
   },
 };
 

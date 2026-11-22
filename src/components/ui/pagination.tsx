@@ -3,8 +3,7 @@
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { formatNumber } from "@/lib/format";
-import { cn } from "@/lib/format";
+import { cn, formatNumber } from "@/lib/format";
 
 type PaginationProps = {
   page: number;
@@ -33,12 +32,20 @@ export function Pagination({
   className,
   variant = "default",
 }: PaginationProps) {
-  const pageNumbers = useMemo(() => getPageNumbers(page, totalPages), [page, totalPages]);
+  const pageNumbers = useMemo(
+    () => getPageNumbers(page, totalPages),
+    [page, totalPages],
+  );
 
   if (totalPages <= 1) {
     if (!showSummary || total === undefined) return null;
     return (
-      <div className={cn("flex flex-wrap items-center justify-between gap-3", className)}>
+      <div
+        className={cn(
+          "flex flex-wrap items-center justify-between gap-3",
+          className,
+        )}
+      >
         <p className="text-sm text-stone-500">
           {formatNumber(total)} {summaryLabel ?? ""}
           {summaryLabel && total === 1 ? "" : summaryLabel ? "s" : ""}
@@ -49,7 +56,12 @@ export function Pagination({
 
   if (variant === "compact") {
     return (
-      <div className={cn("flex flex-wrap items-center justify-between gap-3", className)}>
+      <div
+        className={cn(
+          "flex flex-wrap items-center justify-between gap-3",
+          className,
+        )}
+      >
         {showSummary ? (
           <p className="text-sm text-stone-500">
             {total !== undefined ? formatNumber(total) : 0} {summaryLabel ?? ""}
@@ -82,7 +94,12 @@ export function Pagination({
   }
 
   return (
-    <div className={cn("mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-6", className)}>
+    <div
+      className={cn(
+        "mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-6",
+        className,
+      )}
+    >
       {showSummary ? (
         <p className="text-sm text-stone-500">
           Page {page} of {totalPages}

@@ -89,9 +89,7 @@ export function AuthShell({
             <h1 className="text-3xl font-semibold tracking-[-0.04em] text-ink">
               {title}
             </h1>
-            <p className="mt-2 text-sm leading-6">
-              {description}
-            </p>
+            <p className="mt-2 text-sm leading-6">{description}</p>
             <div className="mt-7">{children}</div>
             {footer ? (
               <div className="mt-6 border-t border-line pt-4">{footer}</div>

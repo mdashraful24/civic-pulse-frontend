@@ -145,3 +145,98 @@ export type UpdateStatusPayload = {
   status: IssueStatus;
   resolutionNote?: string;
 };
+
+export type AIProviderName = "local" | "openai" | "gemini" | "local-fallback";
+
+export type AIUsage = {
+  usedToday: number;
+  limit: number;
+  remaining: number;
+};
+
+export type AIAttribution = {
+  provider: AIProviderName;
+  degraded: boolean;
+  reason?: string;
+  cached: boolean;
+  usage: AIUsage;
+};
+
+export type AICapability = {
+  task: string;
+  name: string;
+  description: string;
+  advanced: boolean;
+};
+
+export type AICapabilities = {
+  provider: Exclude<AIProviderName, "local-fallback">;
+  capabilities: AICapability[];
+  usage: AIUsage;
+  cachingEnabled: boolean;
+};
+
+export type AICategorySuggestion = {
+  category: IssueCategory;
+  confidence: number;
+  alternatives: Array<{ category: IssueCategory; score: number }>;
+  keywords: string[];
+  rationale: string;
+  attribution: AIAttribution;
+};
+
+export type AIPrioritySuggestion = {
+  priority: IssuePriority;
+  urgencyScore: number;
+  confidence: number;
+  reasons: string[];
+  attribution: AIAttribution;
+};
+
+export type AISummarySuggestion = {
+  summary: string;
+  keyPoints: string[];
+  attribution: AIAttribution;
+};
+
+export type AISimilarIssue = {
+  id: string;
+  title: string;
+  category: IssueCategory;
+  status: IssueStatus;
+  location: string;
+  similarity: number;
+};
+
+export type AIAssigneeRecommendation = {
+  id: string;
+  name: string;
+  score: number;
+  reason: string;
+  activeCount: number;
+};
+
+export type AISuggestedAction = {
+  type: "SET_CATEGORY" | "SET_PRIORITY" | "ASSIGN" | "ADD_NOTE";
+  value: string;
+  reason: string;
+};
+
+export type AITriageSuggestion = {
+  category: Omit<AICategorySuggestion, "attribution">;
+  priority: Omit<AIPrioritySuggestion, "attribution">;
+  summary: Omit<AISummarySuggestion, "attribution">;
+  duplicates: AISimilarIssue[];
+  actions: AISuggestedAction[];
+  confidence: number;
+  rationale: string;
+  attribution: AIAttribution;
+};
+
+export type AIPayload = {
+  title: string;
+  description: string;
+  category?: IssueCategory | "";
+  location?: string;
+  issueId?: string;
+};

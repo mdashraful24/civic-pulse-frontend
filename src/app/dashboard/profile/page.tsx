@@ -39,13 +39,12 @@ type PasswordErrors = {
 export default function ProfilePage() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { user, setUser, logout } = useAuth();
+  const { user, setUser } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [removingPhoto, setRemovingPhoto] = useState(false);
   const [pendingPhoto, setPendingPhoto] = useState<File | null>(null);
   const [removePhotoOpen, setRemovePhotoOpen] = useState(false);
-  const [logoutPending, _setLogoutPending] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPasswords, setShowPasswords] = useState(false);
@@ -151,11 +150,6 @@ export default function ProfilePage() {
     } finally {
       setChanging(false);
     }
-  };
-
-  const handleLogout = async () => {
-    _setLogoutPending(true);
-    await logout();
   };
 
   return (

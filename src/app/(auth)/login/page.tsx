@@ -14,7 +14,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { useAuth } from "@/components/auth-provider";
-import { Button, buttonStyles } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { FormField, Input } from "@/components/ui/field";
 import { getApiErrorMessage } from "@/lib/api";
 import type { Role } from "@/lib/types";
@@ -228,24 +228,6 @@ export default function LoginPage() {
           </div>
         </div>
       ) : null}
-
-      {/* <div className="mt-6 rounded-xl bg-stone-100/70 px-3.5 py-3">
-        <p className="text-[11px] leading-5 text-stone-500">
-          Credentials are sent over a secure cookie session. CivicPulse does not
-          use social login.
-        </p>
-      </div> */}
-
-      {/* <Link
-        href="/issues"
-        className={buttonStyles({
-          variant: "ghost",
-          size: "sm",
-          className: "mt-5 w-full",
-        })}
-      >
-        Just browsing? Explore public issues
-      </Link> */}
     </AuthShell>
   );
 }

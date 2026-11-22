@@ -32,7 +32,7 @@ import { Modal } from "@/components/ui/modal";
 import { Pagination } from "@/components/ui/pagination";
 import { api, getApiErrorMessage } from "@/lib/api";
 import { STATUS_OPTIONS } from "@/lib/constants";
-import { formatDateTime, formatNumber, timeAgo } from "@/lib/format";
+import { formatDateTime, timeAgo } from "@/lib/format";
 import { useDebouncedValue } from "@/lib/hooks";
 import { cachePolicy, invalidateIssueCaches } from "@/lib/query-cache";
 import type { Issue, IssueStatus } from "@/lib/types";

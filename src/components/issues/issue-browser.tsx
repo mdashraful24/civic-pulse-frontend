@@ -1,12 +1,7 @@
 "use client";
 
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import {
-  FilterX,
-  Inbox,
-  Search,
-  SlidersHorizontal,
-} from "lucide-react";
+import { FilterX, Inbox, Search, SlidersHorizontal } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { IssueCard } from "@/components/issues/issue-card";
@@ -146,7 +141,6 @@ export function IssueBrowser() {
     setPage(next);
     window.scrollTo({ top: 220, behavior: "smooth" });
   };
-
 
   return (
     <main className="flex-1">

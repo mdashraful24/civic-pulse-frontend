@@ -18,6 +18,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from "sonner";
+import { IssueAITools } from "@/components/ai/issue-ai-tools";
 import { useAuth } from "@/components/auth-provider";
 import {
   CategoryTile,
@@ -195,6 +196,8 @@ export function IssueDetail({ issueId }: { issueId: string }) {
               {issue.description}
             </p>
           </section>
+
+          <IssueAITools issue={issue} />
 
           {issue.status === "RESOLVED" && issue.resolutionNote ? (
             <section className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-5 sm:p-6">

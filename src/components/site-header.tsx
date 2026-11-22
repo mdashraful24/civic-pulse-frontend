@@ -39,7 +39,7 @@ export function SiteHeader() {
   const current = pathname?.replace(/\/$/, "") || "";
 
   useEffect(() => {
-    setOpen(false);
+    if (pathname) setOpen(false);
   }, [pathname]);
 
   useEffect(() => {

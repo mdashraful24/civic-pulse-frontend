@@ -9,6 +9,7 @@ import {
   PlusCircle,
   Settings,
   ShieldCheck,
+  Sparkles,
   Users,
   Wrench,
   X,
@@ -66,6 +67,12 @@ const navItems: Array<{
     label: "Assigned to me",
     icon: Wrench,
     roles: ["PERSONNEL"],
+  },
+  {
+    href: "/dashboard/ai",
+    label: "AI insights",
+    icon: Sparkles,
+    roles: ["CITIZEN", "ADMIN", "PERSONNEL"],
   },
   {
     href: "/dashboard/profile",
