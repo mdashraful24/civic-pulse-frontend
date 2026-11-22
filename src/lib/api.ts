@@ -24,6 +24,7 @@ import type {
   ModerationFlagsParams,
   PageResult,
   PasswordResetOtp,
+  PublicIssueStats,
   RegistrationOtp,
   UpdateIssuePayload,
   UpdateStatusPayload,
@@ -289,6 +290,13 @@ export const api = {
       request<Issue[]>(`/issues${queryString(params)}`, {
         skipRefresh: true,
       }).then(page),
+    publicStats: async () => {
+      const response = await request<PublicIssueStats>("/issues/public-stats", {
+        skipRefresh: true,
+      });
+      if (!response.data) throw new ApiError(500, "Public stats were empty.");
+      return response.data;
+    },
     get: async (id: string) => {
       const response = await request<Issue>(`/issues/${id}`, {
         skipRefresh: true,

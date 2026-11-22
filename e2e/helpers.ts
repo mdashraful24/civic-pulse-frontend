@@ -107,6 +107,14 @@ const settings = [
   },
 ];
 
+const publicStats = {
+  total: 12,
+  pending: 4,
+  inProgress: 0,
+  resolved: 8,
+  statusDistribution: { PENDING: 4, IN_PROGRESS: 0, RESOLVED: 8 },
+};
+
 export async function mockApi(
   page: Page,
   { authenticated = false }: { authenticated?: boolean } = {},
@@ -163,6 +171,10 @@ export async function mockApi(
         total: 1,
         totalPages: 1,
       });
+      return;
+    }
+    if (url.includes("/issues/public-stats")) {
+      await fulfill(publicStats);
       return;
     }
     if (url.includes("/ai/capabilities")) {

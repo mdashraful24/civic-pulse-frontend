@@ -70,6 +70,18 @@ export type IssueHistoryEntry = {
   };
 };
 
+export type PublicIssueStats = {
+  total: number;
+  pending: number;
+  inProgress: number;
+  resolved: number;
+  statusDistribution: {
+    PENDING: number;
+    IN_PROGRESS: number;
+    RESOLVED: number;
+  };
+};
+
 export type IssueStats = {
   scope: "ALL" | "ASSIGNED" | "OWN";
   total: number;

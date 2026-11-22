@@ -48,19 +48,14 @@ export default function LandingPage() {
     queryFn: () => api.issues.listPublic({ limit: 6, sort: "newest" }),
     ...cachePolicy.live,
   });
-  const total = useQuery({
-    queryKey: ["public-issues", "count", "total"],
-    queryFn: () => api.issues.listPublic({ limit: 1 }),
-    ...cachePolicy.stats,
-  });
-  const resolved = useQuery({
-    queryKey: ["public-issues", "count", "resolved"],
-    queryFn: () => api.issues.listPublic({ status: "RESOLVED", limit: 1 }),
+  const stats = useQuery({
+    queryKey: ["public-issues", "stats"],
+    queryFn: () => api.issues.publicStats(),
     ...cachePolicy.stats,
   });
 
-  const totalCount = total.data?.meta.total ?? 0;
-  const resolvedCount = resolved.data?.meta.total ?? 0;
+  const totalCount = stats.data?.total ?? 0;
+  const resolvedCount = stats.data?.resolved ?? 0;
   const openCount = Math.max(totalCount - resolvedCount, 0);
   const progress =
     totalCount > 0 ? Math.round((resolvedCount / totalCount) * 100) : 0;
@@ -135,17 +130,17 @@ export default function LandingPage() {
               <HeroStat
                 label="Issues shared"
                 value={totalCount}
-                loading={total.isLoading}
+                loading={stats.isLoading}
               />
               <HeroStat
                 label="Open now"
                 value={openCount}
-                loading={total.isLoading || resolved.isLoading}
+                loading={stats.isLoading || stats.isLoading}
               />
               <HeroStat
                 label="Resolved"
                 value={resolvedCount}
-                loading={resolved.isLoading}
+                loading={stats.isLoading}
               />
             </div>
           </div>
