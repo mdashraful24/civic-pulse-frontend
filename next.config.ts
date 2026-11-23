@@ -9,6 +9,9 @@ const apiUrl = (
 const apiTarget = apiUrl.replace(/\/api$/, "");
 
 const nextConfig: NextConfig = {
+  experimental: {
+    agentUpgrade: "security",
+  },
   async rewrites() {
     return [
       {

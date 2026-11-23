@@ -3,8 +3,10 @@
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowRight,
+  BarChart3,
   CheckCircle2,
   ClipboardList,
+  Clock,
   MapPin,
   Search,
   ShieldCheck,
@@ -38,6 +40,39 @@ const steps = [
     icon: CheckCircle2,
     title: "See it fixed",
     text: "Field teams update the status and leave a resolution note when the job is done.",
+  },
+];
+
+const features = [
+  {
+    icon: ClipboardList,
+    title: "Quick reporting",
+    text: "Capture the category, location and a photo without filling in a long form.",
+  },
+  {
+    icon: Clock,
+    title: "Clear status trail",
+    text: "Every change from pending to resolved is timestamped and visible to the public.",
+  },
+  {
+    icon: MapPin,
+    title: "Location-aware issues",
+    text: "Reports carry a precise place so neighbours and field teams know where to act.",
+  },
+  {
+    icon: Search,
+    title: "Search and filters",
+    text: "Find reports by keyword, category, status or priority in a few clicks.",
+  },
+  {
+    icon: Users,
+    title: "Role-based dashboards",
+    text: "Residents, administrators and field staff each get the tools they need.",
+  },
+  {
+    icon: BarChart3,
+    title: "Public impact stats",
+    text: "See how many issues were reported and resolved across the community.",
   },
 ];
 
@@ -297,6 +332,47 @@ export default function LandingPage() {
                   {category.description}
                 </p>
               </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="features"
+        className="border-y border-line bg-surface-muted/60"
+      >
+        <div className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-brand">
+                Platform features
+              </p>
+              <h2 className="mt-2 max-w-2xl text-3xl font-semibold tracking-[-0.035em] text-ink">
+                Everything a neighbourhood needs to move from complaint to fix.
+              </h2>
+            </div>
+            <p className="max-w-sm text-sm leading-6 text-stone-500">
+              One shared record for residents, administrators and field teams —
+              with no lost updates.
+            </p>
+          </div>
+
+          <div className="mt-9 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {features.map((feature) => (
+              <article
+                key={feature.title}
+                className="group rounded-2xl border border-line bg-surface p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-brand/25 hover:shadow-md"
+              >
+                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-soft text-brand transition group-hover:bg-brand-solid group-hover:text-white">
+                  <feature.icon className="h-5 w-5" />
+                </span>
+                <h3 className="mt-5 text-base font-bold text-ink">
+                  {feature.title}
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-stone-500">
+                  {feature.text}
+                </p>
+              </article>
             ))}
           </div>
         </div>

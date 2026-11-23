@@ -12,6 +12,74 @@ test("landing page renders the hero", async ({ page }) => {
   ).toBeVisible();
 });
 
+test("landing page shows six feature cards", async ({ page }) => {
+  await page.goto("/");
+
+  await expect(page.locator("#features article")).toHaveCount(6);
+  await expect(
+    page.getByRole("heading", { name: /Everything a neighbourhood needs/ }),
+  ).toBeVisible();
+});
+
+test("footer links the three public legal pages", async ({ page }) => {
+  await page.goto("/");
+
+  const footer = page.locator("footer");
+  await expect(
+    footer.getByRole("link", { name: "Terms & Conditions" }),
+  ).toBeVisible();
+  await expect(
+    footer.getByRole("link", { name: "Privacy Policy" }),
+  ).toBeVisible();
+  await expect(footer.getByRole("link", { name: "Security" })).toBeVisible();
+});
+
+test("header exposes professional public pages only", async ({ page }) => {
+  await page.goto("/");
+
+  const nav = page.locator("header").getByRole("navigation");
+  await expect(nav.getByRole("link", { name: "About" })).toBeVisible();
+  await expect(nav.getByRole("link", { name: "Services" })).toBeVisible();
+  await expect(nav.getByRole("link", { name: "Contact" })).toBeVisible();
+  await expect(
+    nav.getByRole("link", { name: "Terms & Conditions" }),
+  ).toHaveCount(0);
+  await expect(nav.getByRole("link", { name: "Privacy Policy" })).toHaveCount(
+    0,
+  );
+  await expect(nav.getByRole("link", { name: "Security" })).toHaveCount(0);
+  await expect(nav.getByRole("link", { name: "How it works" })).toHaveCount(0);
+  await expect(nav.getByRole("link", { name: "Categories" })).toHaveCount(0);
+});
+
+test("public pages render unique layouts", async ({ page }) => {
+  for (const config of [
+    {
+      path: "/about",
+      heading: /A shared record/,
+      markers: ["#story", "#principles", "#audience"],
+    },
+    {
+      path: "/services",
+      heading: /Everything needed/,
+      markers: ["#service-details", "#service-index", "#residents"],
+    },
+    {
+      path: "/contact",
+      heading: /We are here to help/,
+      markers: ["#channels", "#before-you-write"],
+    },
+  ]) {
+    await page.goto(config.path);
+    await expect(
+      page.getByRole("heading", { level: 1, name: config.heading }),
+    ).toBeVisible();
+    for (const marker of config.markers) {
+      await expect(page.locator(marker)).toBeVisible();
+    }
+  }
+});
+
 test("issue browser applies deep search and sorting", async ({ page }) => {
   const requests: string[] = [];
 

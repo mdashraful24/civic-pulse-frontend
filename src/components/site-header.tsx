@@ -11,12 +11,10 @@ import { Avatar } from "@/components/ui/avatar";
 import { Button, buttonStyles } from "@/components/ui/button";
 import { roleLabels } from "@/lib/constants";
 import { cn } from "@/lib/format";
+import { PUBLIC_PAGES } from "@/lib/public-pages";
 
 const links = [
-  { href: "/", label: "Home" },
-  { href: "/issues", label: "Browse issues" },
-  { href: "/#how-it-works", label: "How it works" },
-  { href: "/#categories", label: "Categories" },
+  ...PUBLIC_PAGES.map((page) => ({ href: page.href, label: page.label })),
 ];
 
 function isLinkActive(href: string, current: string) {
