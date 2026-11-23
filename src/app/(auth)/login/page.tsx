@@ -14,9 +14,9 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { useAuth } from "@/components/auth-provider";
-import { Button } from "@/components/ui/button";
+import { Button, buttonStyles } from "@/components/ui/button";
 import { FormField, Input } from "@/components/ui/field";
-import { getApiErrorMessage } from "@/lib/api";
+import { api, getApiErrorMessage } from "@/lib/api";
 import type { Role } from "@/lib/types";
 import { loginSchema } from "@/lib/validation";
 
@@ -55,10 +55,18 @@ export default function LoginPage() {
   const [errors, setErrors] = useState<Errors>({});
   const [formError, setFormError] = useState("");
   const [pending, setPending] = useState<string | null>(null);
+  const [googleEnabled, setGoogleEnabled] = useState(false);
 
   useEffect(() => {
     if (!authLoading && user) router.replace("/dashboard");
   }, [authLoading, user, router]);
+
+  useEffect(() => {
+    api.auth
+      .googleStatus()
+      .then((response) => setGoogleEnabled(Boolean(response.data?.enabled)))
+      .catch(() => setGoogleEnabled(false));
+  }, []);
 
   useEffect(() => {
     setEmail("");
@@ -199,6 +207,29 @@ export default function LoginPage() {
           {pending === "form" ? null : <ArrowRight className="h-4 w-4" />}
         </Button>
       </form>
+
+      {googleEnabled ? (
+        <div className="mt-6">
+          <div className="flex items-center gap-3">
+            <span className="h-px flex-1 bg-line" />
+            <span className="text-[11px] font-semibold uppercase tracking-[0.14em]">
+              or continue with
+            </span>
+            <span className="h-px flex-1 bg-line" />
+          </div>
+          <a
+            href="/api/auth/google"
+            className={buttonStyles({
+              variant: "outline",
+              size: "lg",
+              className: `mt-3 w-full ${pending !== null ? "pointer-events-none opacity-50" : ""}`,
+            })}
+          >
+            <span className="text-base font-bold text-[#4285F4]">G</span>
+            Continue with Google
+          </a>
+        </div>
+      ) : null}
 
       {quickLogins.length > 0 ? (
         <div className="mt-6">

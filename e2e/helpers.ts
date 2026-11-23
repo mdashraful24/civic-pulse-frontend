@@ -117,7 +117,10 @@ const publicStats = {
 
 export async function mockApi(
   page: Page,
-  { authenticated = false }: { authenticated?: boolean } = {},
+  {
+    authenticated = false,
+    googleEnabled = false,
+  }: { authenticated?: boolean; googleEnabled?: boolean } = {},
 ) {
   await page.route("**/api/**", async (route) => {
     const url = route.request().url();
@@ -139,6 +142,10 @@ export async function mockApi(
         }),
       });
 
+    if (url.includes("/auth/google/status")) {
+      await fulfill({ enabled: googleEnabled });
+      return;
+    }
     if (url.includes("/auth/me")) {
       await fulfill(authenticated ? user : null, authenticated ? 200 : 401);
       return;

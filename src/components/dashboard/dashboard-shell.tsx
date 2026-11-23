@@ -167,7 +167,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
         </div>
       </div>
 
-      <nav className="flex-1 space-y-1 overflow-y-auto px-3 pb-4">
+      <nav className="flex-1 space-y-1 overflow-y-auto scrollbar-none px-3 pb-4">
         <p className="px-3 pb-2 pt-1 text-[10px] font-bold uppercase tracking-[0.16em] text-stone-400">
           Workspace
         </p>
@@ -201,14 +201,14 @@ export function DashboardShell({ children }: { children: ReactNode }) {
           );
         })}
 
-        <div className="my-3 h-px bg-line" />
+        {/* <div className="my-3 h-px bg-line" />
         <Link
           href="/issues"
           className="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-semibold text-stone-600 transition hover:bg-ink/5 hover:text-ink"
         >
           <ExternalLink className="h-4 w-4 text-stone-400 group-hover:text-brand" />
           Public issue map
-        </Link>
+        </Link> */}
       </nav>
 
       <div className="border-t border-line p-3">
@@ -246,7 +246,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
       ) : null}
 
       <div className="flex min-h-dvh flex-col lg:pl-72">
-        <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-3 border-b border-line bg-paper/95 px-4 backdrop-blur-md sm:px-6 lg:px-8">
+        <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-3 border-b border-line bg-paper/95 px-4 backdrop-blur-md sm:px-6 lg:px-10">
           <div className="flex items-center gap-3">
             <Button
               variant="ghost"
@@ -265,8 +265,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
+          <div className="flex items-center gap-3">
             <Link
               href="/issues"
               className="hidden items-center gap-1.5 rounded-lg px-2.5 py-2 text-xs font-semibold text-stone-500 transition hover:bg-ink/5 hover:text-ink sm:flex"
@@ -274,7 +273,8 @@ export function DashboardShell({ children }: { children: ReactNode }) {
               <ExternalLink className="h-3.5 w-3.5" />
               Public map
             </Link>
-            <Link
+            <ThemeToggle />
+            {/* <Link
               href="/dashboard/profile"
               className="flex items-center gap-2 rounded-xl py-1 pl-1 pr-2 transition hover:bg-ink/5"
             >
@@ -282,7 +282,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
               <span className="hidden max-w-28 truncate text-xs font-semibold sm:block">
                 {user.name.split(" ")[0]}
               </span>
-            </Link>
+            </Link> */}
           </div>
         </header>
 

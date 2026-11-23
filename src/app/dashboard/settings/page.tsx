@@ -86,7 +86,7 @@ export default function SettingsPage() {
                         />
                       </FormField>
                     </div>
-                    <div className="flex-[2]">
+                    <div className="flex-2">
                       <FormField label="Value" htmlFor={`value-${setting.key}`}>
                         <Input
                           id={`value-${setting.key}`}
@@ -156,7 +156,7 @@ export default function SettingsPage() {
                   />
                 </FormField>
                 <Button
-                  size="sm"
+                  size="lg"
                   loading={
                     mutation.isPending && mutation.variables?.key === newKey
                   }

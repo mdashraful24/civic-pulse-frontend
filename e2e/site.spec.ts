@@ -59,6 +59,28 @@ test("login page renders the sign-in form", async ({ page }) => {
   await expect(page.getByLabel("Email address")).toBeVisible();
 });
 
+test("login page offers Google sign-in when enabled", async ({ page }) => {
+  await mockApi(page, { googleEnabled: true });
+  await page.goto("/login");
+
+  const googleLink = page.getByRole("link", {
+    name: "Continue with Google",
+  });
+  await expect(googleLink).toBeVisible();
+  await expect(googleLink).toHaveAttribute("href", "/api/auth/google");
+});
+
+test("Google completion page reports callback failures", async ({ page }) => {
+  await page.goto("/auth/google/complete?status=error&reason=failed");
+
+  await expect(
+    page.getByRole("heading", { name: "Google sign-in failed." }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Back to sign in" }),
+  ).toBeVisible();
+});
+
 test("forgot password page requests a reset code", async ({ page }) => {
   await page.route("**/api/auth/forgot-password", async (route) => {
     await route.fulfill({

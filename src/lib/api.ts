@@ -16,6 +16,7 @@ import type {
   AppSetting,
   AuthUser,
   CreateIssuePayload,
+  GoogleStatus,
   Issue,
   IssueHistoryEntry,
   IssueListParams,
@@ -242,6 +243,7 @@ export const api = {
       return response.data;
     },
     me: () => request<AuthUser>("/auth/me"),
+    googleStatus: () => request<GoogleStatus>("/auth/google/status"),
     refresh: () =>
       request<AuthUser>("/auth/refresh-token", {
         method: "POST",

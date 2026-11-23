@@ -26,6 +26,10 @@ export type AuthUser = {
   updatedAt: string;
 };
 
+export type GoogleStatus = {
+  enabled: boolean;
+};
+
 export type AdminUser = Omit<AuthUser, "updatedAt"> & {
   updatedAt?: string;
   _count: {
