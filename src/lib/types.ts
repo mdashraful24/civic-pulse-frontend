@@ -28,6 +28,8 @@ export type AuthUser = {
 
 export type GoogleStatus = {
   enabled: boolean;
+  idTokenEnabled?: boolean;
+  redirectEnabled?: boolean;
 };
 
 export type AdminUser = Omit<AuthUser, "updatedAt"> & {
@@ -37,6 +39,16 @@ export type AdminUser = Omit<AuthUser, "updatedAt"> & {
     assignedIssues: number;
   };
 };
+
+export type CreateAdminUserPayload = {
+  name: string;
+  email: string;
+  password: string;
+  role: Role;
+  status: "ACTIVE" | "BLOCKED";
+};
+
+export type UpdateAdminUserPayload = Partial<CreateAdminUserPayload>;
 
 export type IssuePerson = {
   id: string;

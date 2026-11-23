@@ -33,6 +33,38 @@ export const registerSchema = z.strictObject({
   password: strongPasswordSchema,
 });
 
+const adminUserNameSchema = z
+  .string()
+  .trim()
+  .min(2, "Name must be at least 2 characters long.")
+  .max(80, "Name must not exceed 80 characters.");
+
+const adminRoleSchema = z.enum(["CITIZEN", "ADMIN", "PERSONNEL"]);
+const adminUserStatusSchema = z.enum(["ACTIVE", "BLOCKED"]);
+
+export const createAdminUserSchema = z.strictObject({
+  name: adminUserNameSchema,
+  email: emailSchema,
+  password: strongPasswordSchema,
+  role: adminRoleSchema,
+  status: adminUserStatusSchema,
+});
+
+export const updateAdminUserSchema = z
+  .strictObject({
+    name: adminUserNameSchema.optional(),
+    email: emailSchema.optional(),
+    password: strongPasswordSchema.optional(),
+    role: adminRoleSchema.optional(),
+    status: adminUserStatusSchema.optional(),
+  })
+  .refine((value) => Object.keys(value).length > 0, {
+    message: "Provide at least one field to update.",
+  });
+
+export type CreateAdminUserValues = z.infer<typeof createAdminUserSchema>;
+export type UpdateAdminUserValues = z.infer<typeof updateAdminUserSchema>;
+
 export const loginSchema = z.strictObject({
   email: emailSchema,
   password: z

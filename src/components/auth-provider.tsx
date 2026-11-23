@@ -18,6 +18,7 @@ type AuthContextValue = {
   user: AuthUser | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<AuthUser>;
+  googleLogin: (idToken: string) => Promise<AuthUser>;
   logout: () => Promise<void>;
   setUser: (user: AuthUser | null) => void;
 };
@@ -60,6 +61,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [queryClient],
   );
 
+  const googleLogin = useCallback(
+    async (idToken: string) => {
+      const nextUser = await api.auth.googleIdToken(idToken);
+      queryClient.clear();
+      setUser(nextUser);
+      return nextUser;
+    },
+    [queryClient],
+  );
+
   const logout = useCallback(async () => {
     try {
       await api.auth.logout();
@@ -71,8 +82,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [queryClient, router]);
 
   const value = useMemo(
-    () => ({ user, loading, login, logout, setUser }),
-    [user, loading, login, logout],
+    () => ({ user, loading, login, googleLogin, logout, setUser }),
+    [user, loading, login, googleLogin, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

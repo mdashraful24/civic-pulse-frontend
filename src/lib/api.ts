@@ -15,6 +15,7 @@ import type {
   ApiEnvelope,
   AppSetting,
   AuthUser,
+  CreateAdminUserPayload,
   CreateIssuePayload,
   GoogleStatus,
   Issue,
@@ -27,6 +28,7 @@ import type {
   PasswordResetOtp,
   PublicIssueStats,
   RegistrationOtp,
+  UpdateAdminUserPayload,
   UpdateIssuePayload,
   UpdateStatusPayload,
 } from "@/lib/types";
@@ -51,6 +53,7 @@ type RequestOptions = Omit<RequestInit, "body"> & {
 };
 
 const NO_REFRESH_PATHS = [
+  "/auth/google",
   "/auth/login",
   "/auth/register",
   "/auth/verify-email",
@@ -244,6 +247,14 @@ export const api = {
     },
     me: () => request<AuthUser>("/auth/me"),
     googleStatus: () => request<GoogleStatus>("/auth/google/status"),
+    googleIdToken: (idToken: string) =>
+      unwrap(
+        request<AuthUser>("/auth/google", {
+          method: "POST",
+          body: { idToken },
+          skipRefresh: true,
+        }),
+      ),
     refresh: () =>
       request<AuthUser>("/auth/refresh-token", {
         method: "POST",
@@ -375,6 +386,20 @@ export const api = {
   admin: {
     users: (params: AdminUsersParams = {}) =>
       request<AdminUser[]>(`/admin/users${queryString(params)}`).then(page),
+    createUser: (payload: CreateAdminUserPayload) =>
+      unwrap(
+        request<AdminUser>("/admin/users", {
+          method: "POST",
+          body: payload,
+        }),
+      ),
+    updateUser: (id: string, payload: UpdateAdminUserPayload) =>
+      unwrap(
+        request<AdminUser>(`/admin/users/${id}`, {
+          method: "PATCH",
+          body: payload,
+        }),
+      ),
     updateUserImage: (id: string, file: File) => {
       const formData = new FormData();
       formData.set("image", file);

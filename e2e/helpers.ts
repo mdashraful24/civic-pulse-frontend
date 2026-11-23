@@ -120,7 +120,14 @@ export async function mockApi(
   {
     authenticated = false,
     googleEnabled = false,
-  }: { authenticated?: boolean; googleEnabled?: boolean } = {},
+    googleIdTokenEnabled = false,
+    googleRedirectEnabled = googleEnabled,
+  }: {
+    authenticated?: boolean;
+    googleEnabled?: boolean;
+    googleIdTokenEnabled?: boolean;
+    googleRedirectEnabled?: boolean;
+  } = {},
 ) {
   await page.route("**/api/**", async (route) => {
     const url = route.request().url();
@@ -143,7 +150,11 @@ export async function mockApi(
       });
 
     if (url.includes("/auth/google/status")) {
-      await fulfill({ enabled: googleEnabled });
+      await fulfill({
+        enabled: googleEnabled || googleIdTokenEnabled || googleRedirectEnabled,
+        idTokenEnabled: googleIdTokenEnabled,
+        redirectEnabled: googleRedirectEnabled,
+      });
       return;
     }
     if (url.includes("/auth/me")) {
@@ -172,6 +183,31 @@ export async function mockApi(
       return;
     }
     if (url.includes("/admin/users")) {
+      const method = route.request().method();
+
+      if (method === "POST") {
+        await fulfill(
+          {
+            ...adminUser,
+            id: "44444444-4444-4444-8444-444444444444",
+            name: "Avery Stone",
+            email: "avery@example.com",
+          },
+          201,
+        );
+        return;
+      }
+
+      if (
+        method === "PATCH" &&
+        !url.includes("/image") &&
+        !url.includes("/role") &&
+        !url.includes("/status")
+      ) {
+        await fulfill({ ...adminUser, name: "Maya Updated" });
+        return;
+      }
+
       await fulfill([adminUser], 200, {
         page: 1,
         limit: 10,

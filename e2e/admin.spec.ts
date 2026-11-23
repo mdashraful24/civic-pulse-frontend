@@ -25,6 +25,30 @@ test.describe("admin dashboard", () => {
     ).toBeVisible();
   });
 
+  test("people page can add and edit a person", async ({ page }) => {
+    await page.goto("/dashboard/users");
+
+    await page.getByRole("button", { name: "Add person" }).click();
+    await expect(
+      page.getByRole("dialog", { name: "Add a person" }),
+    ).toBeVisible();
+    await page.getByLabel("Full name").fill("Avery Stone");
+    await page.getByLabel("Email address").fill("avery@example.com");
+    await page.getByPlaceholder("Secure-1234").fill("Secure-1234");
+    await page.getByRole("button", { name: "Create person" }).click();
+
+    await expect(page.getByText("User created.")).toBeVisible();
+
+    await page.getByRole("button", { name: "Edit Maya Patel" }).first().click();
+    await expect(
+      page.getByRole("dialog", { name: "Edit person" }),
+    ).toBeVisible();
+    await page.getByLabel("Full name").fill("Maya Updated");
+    await page.getByRole("button", { name: "Save changes" }).click();
+
+    await expect(page.getByText("User updated.")).toBeVisible();
+  });
+
   test("moderation queue shows reported issues", async ({ page }) => {
     await page.goto("/dashboard/moderation");
 

@@ -13,11 +13,13 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AuthShell } from "@/components/auth/auth-shell";
+import { GoogleIdentityButton } from "@/components/auth/google-identity-button";
 import { useAuth } from "@/components/auth-provider";
+import { GoogleAuthProvider } from "@/components/google-auth-provider";
 import { Button, buttonStyles } from "@/components/ui/button";
 import { FormField, Input } from "@/components/ui/field";
 import { api, getApiErrorMessage } from "@/lib/api";
-import type { Role } from "@/lib/types";
+import type { GoogleStatus, Role } from "@/lib/types";
 import { loginSchema } from "@/lib/validation";
 
 type Errors = { email?: string; password?: string };
@@ -48,14 +50,14 @@ const quickLogins = [
 
 export default function LoginPage() {
   const router = useRouter();
-  const { user, loading: authLoading, login } = useAuth();
+  const { user, loading: authLoading, login, googleLogin } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
   const [formError, setFormError] = useState("");
   const [pending, setPending] = useState<string | null>(null);
-  const [googleEnabled, setGoogleEnabled] = useState(false);
+  const [googleStatus, setGoogleStatus] = useState<GoogleStatus | null>(null);
 
   useEffect(() => {
     if (!authLoading && user) router.replace("/dashboard");
@@ -64,9 +66,17 @@ export default function LoginPage() {
   useEffect(() => {
     api.auth
       .googleStatus()
-      .then((response) => setGoogleEnabled(Boolean(response.data?.enabled)))
-      .catch(() => setGoogleEnabled(false));
+      .then((response) => setGoogleStatus(response.data ?? null))
+      .catch(() => setGoogleStatus(null));
   }, []);
+
+  const googleIdTokenEnabled = Boolean(
+    googleStatus?.idTokenEnabled && process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+  );
+  const googleRedirectEnabled = Boolean(
+    googleStatus?.redirectEnabled ?? googleStatus?.enabled,
+  );
+  const googleEnabled = googleIdTokenEnabled || googleRedirectEnabled;
 
   useEffect(() => {
     setEmail("");
@@ -103,6 +113,27 @@ export default function LoginPage() {
     } finally {
       setPending(null);
     }
+  };
+
+  const signInWithGoogle = async (idToken: string) => {
+    setFormError("");
+    setPending("google");
+
+    try {
+      const nextUser = await googleLogin(idToken);
+      toast.success(`Welcome back, ${nextUser.name.split(" ")[0]}.`);
+      router.push("/dashboard");
+    } catch (error) {
+      setFormError(getApiErrorMessage(error));
+      toast.error("Google sign-in failed. Please try again.");
+    } finally {
+      setPending(null);
+    }
+  };
+
+  const handleGoogleError = () => {
+    setFormError("Google sign-in failed. Please try again.");
+    toast.error("Google sign-in failed. Please try again.");
   };
 
   return (
@@ -217,17 +248,27 @@ export default function LoginPage() {
             </span>
             <span className="h-px flex-1 bg-line" />
           </div>
-          <a
-            href="/api/auth/google"
-            className={buttonStyles({
-              variant: "outline",
-              size: "lg",
-              className: `mt-3 w-full ${pending !== null ? "pointer-events-none opacity-50" : ""}`,
-            })}
-          >
-            <span className="text-base font-bold text-[#4285F4]">G</span>
-            Continue with Google
-          </a>
+          {googleIdTokenEnabled ? (
+            <GoogleAuthProvider>
+              <GoogleIdentityButton
+                disabled={pending !== null}
+                onSuccess={(idToken) => void signInWithGoogle(idToken)}
+                onError={handleGoogleError}
+              />
+            </GoogleAuthProvider>
+          ) : (
+            <a
+              href="/api/auth/google"
+              className={buttonStyles({
+                variant: "outline",
+                size: "lg",
+                className: `mt-3 w-full ${pending !== null ? "pointer-events-none opacity-50" : ""}`,
+              })}
+            >
+              <span className="text-base font-bold text-[#4285F4]">G</span>
+              Continue with Google
+            </a>
+          )}
         </div>
       ) : null}
 

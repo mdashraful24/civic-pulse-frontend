@@ -10,15 +10,18 @@ import {
   Camera,
   CheckCircle2,
   FilterX,
+  Pencil,
   Search,
   Trash2,
   UserRound,
+  UserRoundPlus,
   Users,
 } from "lucide-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/components/auth-provider";
 import { AdminUserControls } from "@/components/dashboard/admin-user-controls";
+import { AdminUserForm } from "@/components/dashboard/admin-user-form";
 import { RoleGate } from "@/components/dashboard/auth-guard";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { RoleBadge, UserStatusBadge } from "@/components/issues/issue-badges";
@@ -55,6 +58,8 @@ export default function AdminUsersPage() {
   const [status, setStatus] = useState<UserStatus | "">("");
   const [page, setPage] = useState(1);
   const [removing, setRemoving] = useState<AdminUser | null>(null);
+  const [formOpen, setFormOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
   const [pendingPhoto, setPendingPhoto] = useState<{
     user: AdminUser;
     file: File;
@@ -77,6 +82,16 @@ export default function AdminUsersPage() {
 
   const invalidate = () => {
     invalidateUserCaches(queryClient);
+  };
+
+  const openCreateForm = () => {
+    setEditingUser(null);
+    setFormOpen(true);
+  };
+
+  const openEditForm = (user: AdminUser) => {
+    setEditingUser(user);
+    setFormOpen(true);
   };
 
   const imageMutation = useMutation({
@@ -167,7 +182,13 @@ export default function AdminUsersPage() {
         <PageHeader
           eyebrow="People directory"
           title="The people behind the work."
-          description="Search everyone in the workspace, check their activity and manage profile photos."
+          description="Search everyone in the workspace, manage account details and update profile photos."
+          actions={
+            <Button onClick={openCreateForm}>
+              <UserRoundPlus className="h-4 w-4" />
+              Add person
+            </Button>
+          }
         />
 
         <div className="mb-5 rounded-2xl border border-line bg-surface p-4 shadow-sm">
@@ -310,7 +331,18 @@ export default function AdminUsersPage() {
                           </p>
                         </td>
                         <td className="px-4 py-3 text-right">
-                          <AdminUserControls user={user} />
+                          <div className="flex items-center justify-end gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => openEditForm(user)}
+                              aria-label={`Edit ${user.name}`}
+                            >
+                              <Pencil className="h-3.5 w-3.5" />
+                              Edit
+                            </Button>
+                            <AdminUserControls user={user} />
+                          </div>
                         </td>
                         <td className="px-5 py-3">
                           <div className="flex items-center justify-end gap-1">
@@ -398,7 +430,16 @@ export default function AdminUsersPage() {
                         Remove
                       </Button>
                     ) : null}
-                    <div className="ml-auto">
+                    <div className="ml-auto flex items-center gap-1">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => openEditForm(user)}
+                        aria-label={`Edit ${user.name}`}
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                        Edit
+                      </Button>
                       <AdminUserControls user={user} />
                     </div>
                   </div>
@@ -441,6 +482,13 @@ export default function AdminUsersPage() {
           onChange={(event) =>
             handlePhotoChange(event.target.files?.[0] ?? null)
           }
+        />
+
+        <AdminUserForm
+          open={formOpen}
+          user={editingUser}
+          onClose={() => setFormOpen(false)}
+          onSaved={invalidate}
         />
 
         <Modal
